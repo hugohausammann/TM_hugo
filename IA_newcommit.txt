@@ -1,0 +1,13 @@
+Pour mettre à jour votre repo GitHub après avoir ajouté un fichier, voici les étapes :
+
+Via le terminal (rapide)
+
+git add .
+git commit -m "Ajouter [nom du fichier]"
+git push
+
+Explications :
+
+git add . : Ajoute tous les fichiers modifiés/nouveaux à la zone de staging
+git commit -m "..." : Crée un snapshot avec un message descriptif
+git push : Envoie le commit vers GitHub
