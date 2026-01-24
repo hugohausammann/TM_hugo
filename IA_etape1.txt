@@ -1,0 +1,90 @@
+User: après avoir fait un npm create vite@latest, comment faire avec VS Code pour enregistrer le projet dans un nouveau repo github ? Explique a quoi sert chaque étape en détail
+
+GitHub Copilot: Je vais vous expliquer comment enregistrer votre projet Vite dans un nouveau repo GitHub avec VS Code.
+
+## Étapes complètes :
+
+### 1. **Initialiser un dépôt Git local**
+```bash
+git init
+```
+**À quoi ça sert** : Crée un dossier `.git` caché dans votre projet qui traçera tous les changements. C'est la base du contrôle de version.
+
+---
+
+### 2. **Créer un fichier `.gitignore`** (s'il n'existe pas)
+```bash
+# Vérifiez si Vite l'a créé automatiquement
+cat .gitignore
+```
+**À quoi ça sert** : Empêche Git de tracker les fichiers inutiles comme `node_modules/`, `.env`, `dist/`. Cela rend votre repo propre et léger.
+
+Si absent, créez-le avec :
+```bash
+node_modules/
+dist/
+.env
+.DS_Store
+```
+
+---
+
+### 3. **Ajouter tous les fichiers au staging**
+```bash
+git add .
+```
+**À quoi ça sert** : Prépare tous les fichiers (sauf ceux ignorés) pour le premier commit. C'est comme dire "je veux enregistrer ces changements".
+
+---
+
+### 4. **Créer un commit initial**
+```bash
+git commit -m "Initial commit"
+```
+**À quoi ça sert** : Crée un snapshot de votre projet avec un message descriptif. C'est un point de sauvegarde que vous pouvez récupérer plus tard.
+
+---
+
+### 5. **Créer un repo sur GitHub**
+- Allez sur [github.com](https://github.com) et connectez-vous
+- Cliquez sur **"+"** → **"New repository"**
+- Donnez le même nom que votre dossier (ex: TM_hugo)
+- **NE cochez PAS** "Initialize this repository with a README" (vous en avez déjà un)
+- Cliquez **"Create repository"**
+
+---
+
+### 6. **Connecter le repo local au repo distant**
+```bash
+git remote add origin https://github.com/VOTRE_USERNAME/NOM_REPO.git
+```
+**À quoi ça sert** : Crée un lien entre votre projet local et le repo GitHub. `origin` est le nom standard pour le serveur distant.
+
+---
+
+### 7. **Renommer la branche principale** (si nécessaire)
+```bash
+git branch -M main
+```
+**À quoi ça sert** : GitHub utilise `main` par défaut, pas `master`. Cette commande harmonise les noms.
+
+---
+
+### 8. **Pousser votre code vers GitHub**
+```bash
+git push -u origin main
+```
+**À quoi ça sert** : Envoie votre commit local au serveur GitHub. Le `-u` configure le suivi automatique pour les futurs `git push`.
+
+---
+
+## **Via VS Code (interface graphique)**
+Si vous préférez l'interface :
+1. Ouvrez le **Source Control** (Ctrl/Cmd + Shift + G)
+2. Cliquez **"Initialize Repository"**
+3. Écrivez "Initial commit" dans le champ de message
+4. Cliquez ✓ pour valider
+5. Cliquez **"Publish to GitHub"** (si vous avez l'extension GitHub)
+6. Sélectionnez "Public" ou "Private"
+
+Voilà ! Votre projet est maintenant sur GitHub. 🚀
