@@ -1,0 +1,178 @@
+Lire [](file:///Users/hugohausammann/TM_2627/TM_hugo/src/App.vue)
+
+Parfait ! Je vais te décortiquer chaque partie de ce fichier App.vue :
+
+## 📄 Structure générale d'un fichier Vue
+
+Un fichier `.vue` a **3 sections** :
+
+```
+<script setup lang="ts">    ← LOGIQUE (la "cervelle")
+</script>
+
+<template>                  ← STRUCTURE (le "squelette" HTML)
+</template>
+
+<style scoped>             ← APPARENCE (la "peau" CSS)
+</style>
+```
+
+---
+
+## 🧠 Section 1 : `<script setup lang="ts">`
+
+```typescript
+import HelloWorld from './components/HelloWorld.vue'
+```
+
+**À quoi ça sert ?**
+- `import` = on importe/charge un composant Vue appelé `HelloWorld`
+- `from './components/HelloWorld.vue'` = on dit où le trouver (dans le dossier `components`)
+- `lang="ts"` = on code en **TypeScript** (comme JavaScript mais plus strict et sécurisé)
+
+**Ce que ça permet :**
+- D'utiliser le composant `HelloWorld` dans cette page
+- De organiser le code en petits morceaux réutilisables
+
+---
+
+## 🏗️ Section 2 : `<template>`
+
+C'est le **code HTML** - la structure visuelle :
+
+```html
+<div>
+  <a href="https://vite.dev" target="_blank">
+    <img src="/vite.svg" class="logo" alt="Vite logo" />
+  </a>
+```
+
+**Décortiquons :**
+
+| Élément | Explication |
+|---------|------------|
+| `<div>` | Conteneur/boîte qui regroupe les logos |
+| `<a>` | Lien hypertexte (les deux logos sont cliquables) |
+| `href="..."` | L'URL vers laquelle le lien pointe |
+| `target="_blank"` | Le lien s'ouvre dans un **nouvel onglet** |
+| `<img>` | Affiche une image |
+| `src="/vite.svg"` | Chemin de l'image à afficher |
+| `class="logo"` | Applique le style CSS appelé `.logo` à cette image |
+| `alt="Vite logo"` | Texte alternatif (si l'image ne charge pas) |
+
+**Il y a 2 logos :**
+1. Le logo Vite (vers vite.dev)
+2. Le logo Vue (vers vuejs.org)
+
+Puis vient :
+```html
+<HelloWorld msg="Vite + Vue" />
+```
+
+- C'est le composant qu'on a importé plus haut
+- `msg="Vite + Vue"` = on lui **passe un message** comme paramètre
+- Ce message s'affichera quelque part dans ce composant
+
+---
+
+## 🎨 Section 3 : `<style scoped>`
+
+C'est le **CSS** - le design et les animations :
+
+```css
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+```
+
+| Propriété | Explication | Effet |
+|-----------|-------------|-------|
+| `.logo` | Sélecteur = s'applique à tous les éléments avec `class="logo"` | Vise les 2 images |
+| `height: 6em` | Hauteur de l'image = 6 unités | Les logos ont une taille fixe |
+| `padding: 1.5em` | Espace intérieur autour de l'image | Les logos ont de la respiration |
+| `will-change: filter` | Dit au navigateur "attention, l'image va changer" | Optimisation de performance |
+| `transition: filter 300ms` | Animation fluide de 300ms pour les changements | Les effets ne sont pas brusques |
+
+---
+
+### Les effets au survol :
+
+```css
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+```
+
+**`:hover`** = "quand on survole avec la souris"
+- **`drop-shadow()`** = ajoute une ombre colorée
+  - `0 0` = pas de décalage
+  - `2em` = ombre de 2 unités
+  - `#646cffaa` = couleur bleu clair avec transparence
+
+```css
+.logo.vue:hover {
+  filter: drop-shadow(0 0 2em #42b883aa);
+}
+```
+
+**`.logo.vue`** = les images qui ont **à la fois** les classes `logo` ET `vue`
+- Quand on survole le logo Vue, l'ombre devient verte `#42b883aa`
+
+---
+
+## 🎯 Résumé : Qu'est-ce que ce fichier fait ?
+
+1. ✅ Affiche 2 logos cliquables (Vite et Vue)
+2. ✅ Au survol, les logos ont une ombre colorée (effet optique)
+3. ✅ Affiche un composant `HelloWorld` avec le message "Vite + Vue"
+4. ✅ C'est la page d'accueil (App.vue) de ton projet
+
+Voilà ! Des questions sur une partie spécifique ? 🚀
+
+
+-------------------------------------------------------------------------------------------
+
+
+Création de [](file:///Users/hugohausammann/TM_2627/TM_hugo/src/components/ExercicesTailwind.vue) effectuée
+
+Parfait ! J'ai créé un fichier complet d'exercices pour toi. Maintenant, il faut l'afficher dans ton App.vue. Je vais faire ça : 
+
+Using "Remplacer une chaîne dans un fichier"
+
+
+```
+
+```
+
+
+Using "Remplacer une chaîne dans un fichier"
+
+
+```
+
+```
+Voilà ! J'ai créé **src/components/ExercicesTailwind.vue** avec **6 exercices progressifs** + 1 défi :
+
+## 📚 Les exercices
+
+| # | Objectif | Ce que tu apprendras |
+|---|----------|---------------------|
+| 1 | Boutons simples | Classes de couleur, padding, coins arrondis |
+| 2 | Effet au survol | `:hover`, `transition`, variations de classes |
+| 3 | Ombre 3D | `shadow`, `transform`, `-translate-y` |
+| 4 | Carte complète | Combiner éléments, structure HTML |
+| 5 | Compteur interactif | `@click`, variables `ref`, affichage dynamique |
+| 6 | Grille responsive | `grid`, `grid-cols`, `md:`, `lg:` |
+| 🚀 | Composition libre | Ton imagination ! |
+
+Chaque exercice a :
+✅ Des consignes claires
+✅ Des indices Tailwind
+✅ Un espace pour écrire ton code
+
+**Maintenant :** Lance `npm run dev` et accède à la page. Tu verras tous les exercices ! 🚀
+
+Made changes.
