@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import MiniJeux from './components/MiniJeux.vue';
+import exercice1 from './components/exercice1.vue';
 
 </script>
 
 <template>
-  <MiniJeux></MiniJeux>
+  <exercice1></exercice1>
 </template>
 

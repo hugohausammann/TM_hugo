@@ -1,3 +1,5 @@
+
+
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 
@@ -19,7 +21,7 @@ compteur.value++;
     <p>Bienvenue dans la section des mini jeux !</p>
     <!-- Ajoutez ici vos mini jeux -->
 <button 
-class="bg-red-400 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+class="bg-red-400 hover:bg-red-700 text-white font-bold py-6 px-12 rounded"
 @click="alert()">Mini Jeu {{ compteur }}</button>
 <p v-if="trop">Trop de clics !</p>
 </div>

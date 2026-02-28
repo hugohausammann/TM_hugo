@@ -1,178 +1,217 @@
-Lire [](file:///Users/hugohausammann/TM_2627/TM_hugo/src/App.vue)
+🟢 EXERCICE 1 — Bouton simple
+🎯 Objectif
 
-Parfait ! Je vais te décortiquer chaque partie de ce fichier App.vue :
+Créer un bouton qui affiche dans la console :
 
-## 📄 Structure générale d'un fichier Vue
+"Bouton cliqué"
 
-Un fichier `.vue` a **3 sections** :
+🧠 Indices
 
-```
-<script setup lang="ts">    ← LOGIQUE (la "cervelle")
+Utilise @click
+
+Crée une fonction dans <script setup>
+
+Utilise console.log()
+
+✅ Correction
+<script setup lang="ts">
+function cliquer() {
+  console.log("Bouton cliqué");
+}
 </script>
 
-<template>                  ← STRUCTURE (le "squelette" HTML)
+<template>
+  <button 
+    class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded"
+    @click="cliquer"
+  >
+    Clique moi
+  </button>
 </template>
 
-<style scoped>             ← APPARENCE (la "peau" CSS)
-</style>
-```
 
----
+🟡 EXERCICE 2 — Bouton compteur
+🎯 Objectif
 
-## 🧠 Section 1 : `<script setup lang="ts">`
+Afficher le nombre de clics dans le bouton.
 
-```typescript
-import HelloWorld from './components/HelloWorld.vue'
-```
+🧠 Indices
 
-**À quoi ça sert ?**
-- `import` = on importe/charge un composant Vue appelé `HelloWorld`
-- `from './components/HelloWorld.vue'` = on dit où le trouver (dans le dossier `components`)
-- `lang="ts"` = on code en **TypeScript** (comme JavaScript mais plus strict et sécurisé)
+Utilise ref(0)
 
-**Ce que ça permet :**
-- D'utiliser le composant `HelloWorld` dans cette page
-- De organiser le code en petits morceaux réutilisables
+Incrémente avec .value++
 
----
+Affiche la variable dans {{ }}
 
-## 🏗️ Section 2 : `<template>`
+✅ Correction
+<script setup lang="ts">
+import { ref } from 'vue';
 
-C'est le **code HTML** - la structure visuelle :
+const compteur = ref(0);
 
-```html
-<div>
-  <a href="https://vite.dev" target="_blank">
-    <img src="/vite.svg" class="logo" alt="Vite logo" />
-  </a>
-```
-
-**Décortiquons :**
-
-| Élément | Explication |
-|---------|------------|
-| `<div>` | Conteneur/boîte qui regroupe les logos |
-| `<a>` | Lien hypertexte (les deux logos sont cliquables) |
-| `href="..."` | L'URL vers laquelle le lien pointe |
-| `target="_blank"` | Le lien s'ouvre dans un **nouvel onglet** |
-| `<img>` | Affiche une image |
-| `src="/vite.svg"` | Chemin de l'image à afficher |
-| `class="logo"` | Applique le style CSS appelé `.logo` à cette image |
-| `alt="Vite logo"` | Texte alternatif (si l'image ne charge pas) |
-
-**Il y a 2 logos :**
-1. Le logo Vite (vers vite.dev)
-2. Le logo Vue (vers vuejs.org)
-
-Puis vient :
-```html
-<HelloWorld msg="Vite + Vue" />
-```
-
-- C'est le composant qu'on a importé plus haut
-- `msg="Vite + Vue"` = on lui **passe un message** comme paramètre
-- Ce message s'affichera quelque part dans ce composant
-
----
-
-## 🎨 Section 3 : `<style scoped>`
-
-C'est le **CSS** - le design et les animations :
-
-```css
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+function incrementer() {
+  compteur.value++;
 }
-```
+</script>
 
-| Propriété | Explication | Effet |
-|-----------|-------------|-------|
-| `.logo` | Sélecteur = s'applique à tous les éléments avec `class="logo"` | Vise les 2 images |
-| `height: 6em` | Hauteur de l'image = 6 unités | Les logos ont une taille fixe |
-| `padding: 1.5em` | Espace intérieur autour de l'image | Les logos ont de la respiration |
-| `will-change: filter` | Dit au navigateur "attention, l'image va changer" | Optimisation de performance |
-| `transition: filter 300ms` | Animation fluide de 300ms pour les changements | Les effets ne sont pas brusques |
+<template>
+  <button 
+    class="bg-green-500 hover:bg-green-700 text-white px-6 py-3 rounded"
+    @click="incrementer"
+  >
+    Clics : {{ compteur }}
+  </button>
+</template>
+🟠 EXERCICE 3 — Message après 5 clics
+🎯 Objectif
 
----
+Afficher un message quand le compteur dépasse 5.
 
-### Les effets au survol :
+🧠 Indices
 
-```css
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+Utilise computed()
+
+Utilise v-if
+
+✅ Correction
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+
+const compteur = ref(0);
+
+const trop = computed(() => compteur.value > 5);
+
+function incrementer() {
+  compteur.value++;
 }
-```
+</script>
 
-**`:hover`** = "quand on survole avec la souris"
-- **`drop-shadow()`** = ajoute une ombre colorée
-  - `0 0` = pas de décalage
-  - `2em` = ombre de 2 unités
-  - `#646cffaa` = couleur bleu clair avec transparence
+<template>
+  <button 
+    class="bg-purple-500 hover:bg-purple-700 text-white px-6 py-3 rounded"
+    @click="incrementer"
+  >
+    Clics : {{ compteur }}
+  </button>
 
-```css
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+  <p v-if="trop" class="text-red-500 mt-4">
+    Attention ! Trop de clics !
+  </p>
+</template>
+🔵 EXERCICE 4 — Changement de couleur automatique
+🎯 Objectif
+
+Le bouton devient rouge après 5 clics.
+
+🧠 Indices
+
+Utilise :class
+
+Utilise computed()
+
+Retourne une string différente selon le compteur
+
+✅ Correction
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+
+const compteur = ref(0);
+
+const couleur = computed(() =>
+  compteur.value > 5
+    ? "bg-red-500 hover:bg-red-700"
+    : "bg-blue-500 hover:bg-blue-700"
+);
+
+function incrementer() {
+  compteur.value++;
 }
-```
+</script>
 
-**`.logo.vue`** = les images qui ont **à la fois** les classes `logo` ET `vue`
-- Quand on survole le logo Vue, l'ombre devient verte `#42b883aa`
-
----
-
-## 🎯 Résumé : Qu'est-ce que ce fichier fait ?
-
-1. ✅ Affiche 2 logos cliquables (Vite et Vue)
-2. ✅ Au survol, les logos ont une ombre colorée (effet optique)
-3. ✅ Affiche un composant `HelloWorld` avec le message "Vite + Vue"
-4. ✅ C'est la page d'accueil (App.vue) de ton projet
-
-Voilà ! Des questions sur une partie spécifique ? 🚀
+<template>
+  <button
+    :class="[couleur, 'text-white px-6 py-3 rounded transition duration-300']"
+    @click="incrementer"
+  >
+    Score : {{ compteur }}
+  </button>
+</template>
 
 
--------------------------------------------------------------------------------------------
+🔴 EXERCICE 5 — Bouton désactivé
+🎯 Objectif
 
+Après 10 clics :
 
-Création de [](file:///Users/hugohausammann/TM_2627/TM_hugo/src/components/ExercicesTailwind.vue) effectuée
+le bouton se désactive
 
-Parfait ! J'ai créé un fichier complet d'exercices pour toi. Maintenant, il faut l'afficher dans ton App.vue. Je vais faire ça : 
+il devient gris
 
-Using "Remplacer une chaîne dans un fichier"
+il n’est plus cliquable
 
+🧠 Indices
 
-```
+Utilise :disabled
 
-```
+Ajoute cursor-not-allowed
 
+Bloque la fonction
 
-Using "Remplacer une chaîne dans un fichier"
+✅ Correction
+<script setup lang="ts">
+import { ref, computed } from 'vue';
 
+const compteur = ref(0);
 
-```
+const limiteAtteinte = computed(() => compteur.value >= 10);
 
-```
-Voilà ! J'ai créé **src/components/ExercicesTailwind.vue** avec **6 exercices progressifs** + 1 défi :
+function incrementer() {
+  if (!limiteAtteinte.value) {
+    compteur.value++;
+  }
+}
+</script>
 
-## 📚 Les exercices
+<template>
+  <button
+    :disabled="limiteAtteinte"
+    :class="[
+      limiteAtteinte
+        ? 'bg-gray-400 cursor-not-allowed'
+        : 'bg-green-500 hover:bg-green-700',
+      'text-white px-6 py-3 rounded transition'
+    ]"
+    @click="incrementer"
+  >
+    Score : {{ compteur }}
+  </button>
 
-| # | Objectif | Ce que tu apprendras |
-|---|----------|---------------------|
-| 1 | Boutons simples | Classes de couleur, padding, coins arrondis |
-| 2 | Effet au survol | `:hover`, `transition`, variations de classes |
-| 3 | Ombre 3D | `shadow`, `transform`, `-translate-y` |
-| 4 | Carte complète | Combiner éléments, structure HTML |
-| 5 | Compteur interactif | `@click`, variables `ref`, affichage dynamique |
-| 6 | Grille responsive | `grid`, `grid-cols`, `md:`, `lg:` |
-| 🚀 | Composition libre | Ton imagination ! |
+  <p v-if="limiteAtteinte" class="text-red-600 mt-3">
+    Limite atteinte !
+  </p>
+</template>
+🟣 EXERCICE 6 — Mini Jeu complet (Challenge 💪)
+🎯 Objectif
 
-Chaque exercice a :
-✅ Des consignes claires
-✅ Des indices Tailwind
-✅ Un espace pour écrire ton code
+Créer :
 
-**Maintenant :** Lance `npm run dev` et accède à la page. Tu verras tous les exercices ! 🚀
+➕ un bouton +1
 
-Made changes.
+➖ un bouton -1
+
+🔄 un bouton Reset
+
+🎨 couleur change si score négatif (rouge) ou positif (vert)
+
+🎓 Résumé important
+
+Voici ce que chaque concept te permet de faire :
+
+Outil	Sert à
+ref()	        Créer une variable réactive
+.value	      Modifier la valeur
+@click	      Réagir au clic
+computed()	  Calculer automatiquement
+v-if	        Afficher/cacher
+:class	      Changer le style dynamiquement
+:disabled	    Bloquer un bouton
