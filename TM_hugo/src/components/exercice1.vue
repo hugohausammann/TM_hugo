@@ -7,11 +7,13 @@ const coups = ref(0);
 
 const victoire = ref(false);
 
-const plateau = ref([
-  [true, false, true],
-  [false, false, true],
-  [false, false, false]
-]);
+const ligne = [
+  Math.random() < 0.5,
+  Math.random() < 0.5,
+  Math.random() < 0.5  
+];
+
+const plateau = ref(genererPlateau());
 
 const jetons_restants = computed(() => {
   let count = 0;
@@ -27,12 +29,28 @@ const jetons_restants = computed(() => {
 
 const hover = ref<{ i: number, j: number } | null>(null);
 
+const sonVictoire = new Audio('/son/victoire.mp3');
+
+function genererPlateau() {return [
+  [
+    Math.random() > 0.5,
+    Math.random() > 0.5,
+    Math.random() > 0.5
+  ],
+  [
+    Math.random() > 0.5,
+    Math.random() > 0.5,
+    Math.random() > 0.5
+  ],
+  [
+    Math.random() > 0.5,
+    Math.random() > 0.5,
+    Math.random() > 0.5
+  ]
+];}
+
 function recommencer() {
-  plateau.value = [
-    [true, false, true],
-    [false, false, true],
-    [false, false, false]
-  ];
+  plateau.value = genererPlateau();
   coups.value = 0;
   victoire.value = false;
 }
@@ -104,6 +122,8 @@ function gererClick(i: number, j: number) {
   
   } if (verifierVictoire()) {
     victoire.value = true;
+    sonVictoire.currentTime = 0;
+    sonVictoire.play();
 
   } coups.value++;
 }
