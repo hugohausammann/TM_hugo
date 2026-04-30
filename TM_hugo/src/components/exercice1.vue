@@ -7,12 +7,6 @@ const coups = ref(0);
 
 const victoire = ref(false);
 
-const ligne = [
-  Math.random() < 0.5,
-  Math.random() < 0.5,
-  Math.random() < 0.5  
-];
-
 const plateau = ref(genererPlateau());
 
 const jetons_restants = computed(() => {
@@ -29,80 +23,58 @@ const jetons_restants = computed(() => {
 
 const hover = ref<{ i: number, j: number } | null>(null);
 
-const sonVictoire = new Audio('/son/victoire.mp3');
+const musiqueFond = new Audio("/son/background_music.mp3");
+musiqueFond.loop = true;
+musiqueFond.volume = 0.3;
 
-function genererPlateau() {return [
-  [
-    Math.random() > 0.5,
-    Math.random() > 0.5,
-    Math.random() > 0.5
-  ],
-  [
-    Math.random() > 0.5,
-    Math.random() > 0.5,
-    Math.random() > 0.5
-  ],
-  [
-    Math.random() > 0.5,
-    Math.random() > 0.5,
-    Math.random() > 0.5
-  ]
-];}
+const sonVictoire = new Audio('/son/victoire.mp3');
+sonVictoire.volume = 0.7;
+
+const sonCoup = new Audio('/son/touch.mp3');
+sonCoup.volume = 0.5;
+
+
+
+function genererPlateau() {
+    return Array.from({ length: 3 }, 
+    () => Array.from({ length: 3 }, 
+    () => Math.random() > 0.5));
+
+}
 
 function recommencer() {
   plateau.value = genererPlateau();
   coups.value = 0;
   victoire.value = false;
+  musiqueFond.pause();
+  musiqueFond.currentTime = 0;
 }
 
-function retournerLigne(index: number) {
-  const ligne = plateau.value[index];
-  if (ligne) {
-    for (let i=0; i < 3; i++) {
-      ligne[i] = !ligne[i];
-    }
+function retournerCases(coordonnees: [number, number][]) {
+  for (const [i, j] of coordonnees) {
+    plateau.value[i][j] = !plateau.value[i][j];
   }
 }
 
-function retournerColonne(index: number) {
-  for (let i=0; i < 3; i++) {
-    const ligne = plateau.value[i];
-    if (ligne) {
-      ligne[index] = !ligne[index];
-    }
-  }
+// Chaque fonction appelle retournerCases avec les bonnes coordonnées
+function retournerLigne(i: number) {
+  retournerCases([[i,0], [i,1], [i,2]]);
+}
+
+function retournerColonne(j: number) {
+  retournerCases([[0,j], [1,j], [2,j]]);
 }
 
 function retournerDiagonale1() {
-  for (let i=0; i<3; i++) {
-    const ligne = plateau.value[i];
-    if (ligne) {
-      ligne[i] = !ligne[i];
-    }
-  }
+  retournerCases([[0,0], [1,1], [2,2]]);
 }
 
 function retournerDiagonale2() {
-  for (let i=0; i<3; i++) {
-    const ligne = plateau.value[i];
-    if (ligne) {
-      ligne[2 - i] = !ligne[2 - i];
-    }
-  }
+  retournerCases([[0,2], [1,1], [2,0]]);
 }
 
 function verifierVictoire() {
-  for (let i = 0; i < 3; i++) {
-    for (let j = 0; j < 3; j++) {
-      const ligne = plateau.value[i];
-      if (!ligne || !ligne[j]) {
-        return false;
-      }
-
-    }
-  }
-
-  return true;
+  return plateau.value.every(ligne => ligne.every(cellule => cellule));
 }
 
 function gererClick(i: number, j: number) {
@@ -120,12 +92,20 @@ function gererClick(i: number, j: number) {
   } else if (mode.value === 'diagonale 2') {
     retournerDiagonale2();
   
-  } if (verifierVictoire()) {
+  } 
+  sonCoup.currentTime = 0;
+  sonCoup.play();
+  
+  if (verifierVictoire()) {
     victoire.value = true;
     sonVictoire.currentTime = 0;
     sonVictoire.play();
+    musiqueFond.pause();
 
-  } coups.value++;
+  } if (coups.value === 0) {
+    musiqueFond.play();
+  }
+  coups.value++;
 }
 
 function estSurbrille(i: number, j: number) {
