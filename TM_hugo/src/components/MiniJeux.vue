@@ -1,29 +1,46 @@
-
-
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+type Cellule = null | 0 | 1
+type Ligne = Cellule[]
+type Grille = Ligne[]
 
-const compteur = ref(0);
+const taille = 4
 
-const trop=computed(() => {
-  return compteur.value > 10;
-});
+function creerGrilleVide(taille: number): Grille {
+  const grille: Grille = []
 
+  for (let i = 0; i < taille; i++) {
+    const ligne: Ligne = Array(taille).fill(null)
+    grille.push(ligne)
+  }
 
-function alert() {
-compteur.value++;
+  return grille
+}
+
+const grille: Grille = creerGrilleVide(taille)
+
+const premiereLigne = grille[0]
+
+if (premiereLigne) {
+  premiereLigne[0] = 1
 }
 </script>
 
 <template>
-  <div class="mini-jeux">
-    <h2 class="text-2xl">Mini Jeux</h2>
-    <p>Bienvenue dans la section des mini jeux !</p>
-    <!-- Ajoutez ici vos mini jeux -->
-<button 
-class="bg-red-400 hover:bg-red-700 text-white font-bold py-6 px-12 rounded"
-@click="alert()">Mini Jeu {{ compteur }}</button>
-<p v-if="trop">Trop de clics !</p>
-</div>
+  <div>
+    <div v-for="ligne in grille" style="display: flex">
+      <div
+        v-for="cellule in ligne"
+        style="
+        border: 1px solid black;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        "
+        >
+        {{ cellule === null ? "·" : cellule }}
+      </div>
+    </div>
+  </div>
 </template>
-
