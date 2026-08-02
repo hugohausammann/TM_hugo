@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+
 type Cellule = null | 0 | 1
 type Ligne = Cellule[]
 type Grille = Ligne[]
 
-const taille = 4
+const taille = 8
+const tailleCase = 80 / taille
+const taillechiffre = tailleCase * 0.4
 
 function creerGrilleVide(taille: number): Grille {
   const grille: Grille = []
@@ -16,31 +20,66 @@ function creerGrilleVide(taille: number): Grille {
   return grille
 }
 
-const grille: Grille = creerGrilleVide(taille)
+function changerCellule(indexLigne: number, indexCellule: number) {
+  const ligne = grille.value[indexLigne]
 
-const premiereLigne = grille[0]
+  if (!ligne) {
+    return
+  }
 
-if (premiereLigne) {
-  premiereLigne[0] = 1
+  if (ligne[indexCellule] === null) {
+    ligne[indexCellule] = 0
+  } else if (ligne[indexCellule] === 0) {
+    ligne[indexCellule] = 1
+  } else {
+    ligne[indexCellule] = null
+  }
 }
+
+const grille = ref<Grille>(creerGrilleVide(taille))
+
 </script>
 
 <template>
-  <div>
-    <div v-for="ligne in grille" style="display: flex">
+  <div class="page">
+    <div>
       <div
-        v-for="cellule in ligne"
-        style="
-        border: 1px solid black;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        "
+        v-for="(ligne, indexLigne) in grille"
+        class="ligne"
+      >
+        <div
+          v-for="(cellule, indexCellule) in ligne"
+          class="cellule"
+          @click="changerCellule(indexLigne, indexCellule)"
+          :style="{
+            width: tailleCase + 'vmin',
+            height: tailleCase + 'vmin',
+            fontSize: taillechiffre + 'vmin'
+          }"
         >
-        {{ cellule === null ? "·" : cellule }}
+          {{ cellule }}
+        </div>
       </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.ligne {
+  display: flex;
+}
+
+.cellule {
+  border: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+</style>
