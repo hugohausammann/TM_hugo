@@ -1,15 +1,6 @@
-<script setup lang="ts">
-import { ref } from 'vue'
+import type { Grille, Ligne } from './types'
 
-type Cellule = null | 0 | 1
-type Ligne = Cellule[]
-type Grille = Ligne[]
-
-const taille = 4
-const tailleCase = 80 / taille
-const taillechiffre = tailleCase * 0.4
-
-function creerGrilleVide(taille: number): Grille {
+export function creerGrilleVide(taille: number): Grille {
   const grille: Grille = []
 
   for (let i = 0; i < taille; i++) {
@@ -20,57 +11,6 @@ function creerGrilleVide(taille: number): Grille {
   return grille
 }
 
-function changerCellule(indexLigne: number, indexCellule: number) {
-  if (jeuTermine.value) {
-    return
-  }
-  
-  const ligne = grille.value[indexLigne]
-
-  if (!ligne) {
-    return
-  }
-
-  if (ligne[indexCellule] === null) {
-    ligne[indexCellule] = 0
-  } else if (ligne[indexCellule] === 0) {
-    ligne[indexCellule] = 1
-  } else {
-    ligne[indexCellule] = null
-  }
-
-  const estInvalide = ligneInvalide(ligne)
-  console.log('Ligne invalide :', estInvalide)
-
-  const colonne = obtenirColonne(grille.value, indexCellule)
-  const colonneEstInvalide = ligneInvalide(colonne)
-  console.log('Colonne invalide :', colonneEstInvalide)
-
-  if (partieGagnee(grille.value)) {
-    jeuTermine.value = true
-  }
-}
-
-const grille = ref<Grille>(creerGrilleVide(taille))
-const jeuTermine = ref(false)
-
-function contientTroisConsecutifs(ligne: Ligne): boolean {
-  for (let i = 0; i < ligne.length - 2; i++) {
-    const cellule1 = ligne[i]
-    const cellule2 = ligne[i + 1]
-    const cellule3 = ligne[i + 2]
-
-    if (
-      cellule1 !== null &&
-      cellule1 === cellule2 &&
-      cellule2 === cellule3
-    ) {
-      return true
-    }
-  }
-
-  return false
-}
 
 function compterZeros(ligne: Ligne): number {
   let nombreDeZeros = 0
@@ -96,6 +36,24 @@ function compterUns(ligne: Ligne): number {
   return nombreDeUns
 }
 
+function contientTroisConsecutifs(ligne: Ligne): boolean {
+  for (let i = 0; i < ligne.length - 2; i++) {
+    const cellule1 = ligne[i]
+    const cellule2 = ligne[i + 1]
+    const cellule3 = ligne[i + 2]
+
+    if (
+      cellule1 !== null &&
+      cellule1 === cellule2 &&
+      cellule2 === cellule3
+    ) {
+      return true
+    }
+  }
+
+  return false
+}
+
 function contientTropDeValeurs(ligne: Ligne): boolean {
   const maximum = ligne.length / 2
   const nombreDeZeros = compterZeros(ligne)
@@ -112,14 +70,18 @@ function contientTropDeValeurs(ligne: Ligne): boolean {
   return false
 }
 
-function ligneInvalide(ligne: Ligne): boolean {
+export function ligneInvalide(ligne: Ligne): boolean {
   return (
     contientTroisConsecutifs(ligne) ||
     contientTropDeValeurs(ligne)
   )
 }
 
-function obtenirColonne(grille: Grille, indexColonne: number): Ligne {
+
+export function obtenirColonne(
+  grille: Grille,
+  indexColonne: number
+): Ligne {
   const colonne: Ligne = []
 
   for (const ligne of grille) {
@@ -132,6 +94,7 @@ function obtenirColonne(grille: Grille, indexColonne: number): Ligne {
 
   return colonne
 }
+
 
 function contientLigneInvalide(grille: Grille): boolean {
   for (const ligne of grille) {
@@ -176,7 +139,7 @@ function grilleComplete(grille: Grille): boolean {
   return true
 }
 
-function partieGagnee(grille: Grille): boolean {
+export function partieGagnee(grille: Grille): boolean {
   return grilleComplete(grille) && !grilleInvalide(grille)
 }
 
@@ -241,50 +204,3 @@ function contientColonnesIdentiques(grille: Grille): boolean {
 
   return false
 }
-</script>
-
-<template>
-  <div class="page">
-    <div>
-      <div
-        v-for="(ligne, indexLigne) in grille"
-        class="ligne"
-      >
-        <div
-          v-for="(cellule, indexCellule) in ligne"
-          class="cellule"
-          @click="changerCellule(indexLigne, indexCellule)"
-          :style="{
-            width: tailleCase + 'vmin',
-            height: tailleCase + 'vmin',
-            fontSize: taillechiffre + 'vmin'
-          }"
-        >
-          {{ cellule }}
-        </div>
-      </div>
-    </div>
-    <p v-if="jeuTermine">VICTOIRE, jeu terminé !</p>
-
-  </div>
-</template>
-
-<style scoped>
-.page {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.ligne {
-  display: flex;
-}
-
-.cellule {
-  border: 1px solid black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-</style>

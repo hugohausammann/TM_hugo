@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import Minijeux from './components/MiniJeux.vue';
-
+import Takuzu from './components/Takuzu.vue';
 </script>
 
 <template>
-  <Minijeux></Minijeux>
+  <Takuzu />
 </template>
 
