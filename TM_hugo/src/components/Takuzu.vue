@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { creerGrilleVide, ligneInvalide, obtenirColonne, partieGagnee } from '../takuzu/logique'
+import { computed,ref } from 'vue'
+import { creerGrilleVide, partieGagnee } from '../takuzu/logique'
 import type { Grille } from '../takuzu/types'
 
-const taille = 4
-const tailleCase = 80 / taille
-const taillechiffre = tailleCase * 0.4
+const taille = ref(4)
+
+const tailleCase = computed(() => 80 / taille.value)
+const taillechiffre = computed(() => tailleCase.value * 0.4)
+
+const grille = ref<Grille>(creerGrilleVide(taille.value))
 
 
 function changerCellule(indexLigne: number, indexCellule: number) {
@@ -26,21 +29,25 @@ function changerCellule(indexLigne: number, indexCellule: number) {
   } else {
     ligne[indexCellule] = null
   }
+}
 
-  const estInvalide = ligneInvalide(ligne)
-  console.log('Ligne invalide :', estInvalide)
+function recommencer() {
+  grille.value = creerGrilleVide(taille.value)
+  jeuTermine.value = false
+  messageValidation.value = ''
+}
 
-  const colonne = obtenirColonne(grille.value, indexCellule)
-  const colonneEstInvalide = ligneInvalide(colonne)
-  console.log('Colonne invalide :', colonneEstInvalide)
-
+function validerPartie() {
   if (partieGagnee(grille.value)) {
     jeuTermine.value = true
+    messageValidation.value = 'Félicitations, vous avez gagné !'
+  } else {
+    messageValidation.value = 'La partie n\'est pas encore terminée.'
   }
 }
 
-const grille = ref<Grille>(creerGrilleVide(taille))
 const jeuTermine = ref(false)
+const messageValidation = ref('')
 
 
 
@@ -50,6 +57,18 @@ const jeuTermine = ref(false)
 <template>
   <div class="page">
     <div>
+      <label>
+        Taille de la grille :
+
+        <select
+          v-model.number="taille"
+          @change="recommencer"
+        >
+          <option :value="4">4 × 4</option>
+          <option :value="6">6 × 6</option>
+          <option :value="8">8 × 8</option>
+        </select>
+      </label>
       <div
         v-for="(ligne, indexLigne) in grille"
         class="ligne"
@@ -68,7 +87,10 @@ const jeuTermine = ref(false)
         </div>
       </div>
     </div>
-    <p v-if="jeuTermine">VICTOIRE, jeu terminé !</p>
+    <p v-if="messageValidation">{{ messageValidation }}</p>
+
+    <button @click="validerPartie">Valider</button>
+    <button @click="recommencer">Recommencer</button>
 
   </div>
 </template>
@@ -77,6 +99,7 @@ const jeuTermine = ref(false)
 .page {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
