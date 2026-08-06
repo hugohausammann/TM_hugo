@@ -54,26 +54,25 @@ function contientTroisConsecutifs(ligne: Ligne): boolean {
   return false
 }
 
-function contientTropDeValeurs(ligne: Ligne): boolean {
-  const maximum = ligne.length / 2
-  const nombreDeZeros = compterZeros(ligne)
-  const nombreDeUns = compterUns(ligne)
+function contientTropDeValeurs(
+  ligne: Ligne,
+  tailleComplete: number = ligne.length
+): boolean {
+  const maximum = tailleComplete / 2
 
-  if (nombreDeZeros > maximum) {
-    return true
-  }
-
-  if (nombreDeUns > maximum) {
-    return true
-  }
-
-  return false
+  return (
+    compterZeros(ligne) > maximum ||
+    compterUns(ligne) > maximum
+  )
 }
 
-export function ligneInvalide(ligne: Ligne): boolean {
+export function ligneInvalide(
+  ligne: Ligne,
+  tailleComplete: number = ligne.length
+): boolean {
   return (
     contientTroisConsecutifs(ligne) ||
-    contientTropDeValeurs(ligne)
+    contientTropDeValeurs(ligne, tailleComplete)
   )
 }
 
@@ -107,10 +106,16 @@ function contientLigneInvalide(grille: Grille): boolean {
 }
 
 function contientColonneInvalide(grille: Grille): boolean {
-  for (let indexColonne = 0; indexColonne < grille.length; indexColonne++) {
+  const tailleComplete = grille[0]?.length ?? 0
+
+  for (
+    let indexColonne = 0;
+    indexColonne < tailleComplete;
+    indexColonne++
+  ) {
     const colonne = obtenirColonne(grille, indexColonne)
 
-    if (ligneInvalide(colonne)) {
+    if (ligneInvalide(colonne, tailleComplete)) {
       return true
     }
   }
@@ -199,6 +204,106 @@ function contientColonnesIdentiques(grille: Grille): boolean {
       ) {
         return true
       }
+    }
+  }
+
+  return false
+}
+
+function creerLigneEquilibree(taille: number): Ligne {
+  let ligne: Ligne = []
+  const moitie = taille / 2
+
+  do {
+    ligne = []
+
+    for (let i = 0; i < moitie; i++) {
+      ligne.push(0)
+    }
+
+    for (let i = 0; i < moitie; i++) {
+      ligne.push(1)
+    }
+
+    melangerLigne(ligne)
+  } while (ligneInvalide(ligne))
+
+  return ligne
+}
+
+function echangerCellules(
+  ligne: Ligne,
+  indexA: number,
+  indexB: number
+) {
+  const celluleA = ligne[indexA]
+  const celluleB = ligne[indexB]
+
+  if (celluleA === undefined || celluleB === undefined) {
+    return
+  }
+
+  ligne[indexA] = celluleB
+  ligne[indexB] = celluleA
+}
+
+function melangerLigne(ligne: Ligne) {
+  for (let i = 0; i < ligne.length; i++) {
+    const indexA = Math.floor(Math.random() * ligne.length)
+    const indexB = Math.floor(Math.random() * ligne.length)
+
+    echangerCellules(ligne, indexA, indexB)
+  }
+}
+
+export function creerGrilleAleatoire(taille: number): Grille {
+  while (true) {
+    const grille: Grille = []
+    let nombreEssais = 0
+    const maximumEssais = 1000
+
+    while (
+      grille.length < taille &&
+      nombreEssais < maximumEssais
+    ) {
+      const nouvelleLigne = creerLigneEquilibree(taille)
+
+      if (ligneDejaPresente(grille, nouvelleLigne)) {
+        nombreEssais++
+        continue
+      }
+
+      grille.push(nouvelleLigne)
+
+      if (contientColonneInvalide(grille)) {
+        grille.pop()
+        nombreEssais++
+      } else {
+        nombreEssais = 0
+      }
+    }
+
+    // PREMIER BOUT : immédiatement après la boucle while intérieure
+    if (grille.length < taille) {
+      continue
+    }
+
+    // DEUXIÈME BOUT : juste après le test précédent
+    if (contientColonnesIdentiques(grille)) {
+      continue
+    }
+
+    return grille
+  }
+}
+
+function ligneDejaPresente(
+  grille: Grille,
+  ligneCandidate: Ligne
+): boolean {
+  for (const ligneExistante of grille) {
+    if (lignesIdentiques(ligneExistante, ligneCandidate)) {
+      return true
     }
   }
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed,ref } from 'vue'
-import { creerGrilleVide, partieGagnee } from '../takuzu/logique'
+import { creerGrilleVide, partieGagnee, creerGrilleAleatoire } from '../takuzu/logique'
 import type { Grille } from '../takuzu/types'
 
 const taille = ref(4)
@@ -33,6 +33,15 @@ function changerCellule(indexLigne: number, indexCellule: number) {
 
 function recommencer() {
   grille.value = creerGrilleVide(taille.value)
+  jeuTermine.value = false
+  messageValidation.value = ''
+}
+
+function genererGrille() {
+  if (jeuTermine.value) {
+    return
+  }
+  grille.value = creerGrilleAleatoire(taille.value)
   jeuTermine.value = false
   messageValidation.value = ''
 }
@@ -91,6 +100,7 @@ const messageValidation = ref('')
 
     <button @click="validerPartie">Valider</button>
     <button @click="recommencer">Recommencer</button>
+    <button :disabled="jeuTermine" @click="genererGrille">Générer une grille</button>
 
   </div>
 </template>
@@ -113,5 +123,10 @@ const messageValidation = ref('')
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>
