@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed,ref } from 'vue'
-import { creerGrilleVide, partieGagnee, creerGrilleAleatoire } from '../takuzu/logique'
+import { creerGrilleVide, partieGagnee, creerGrilleAleatoire, creerGrilleJeu } from '../takuzu/logique'
 import type { Grille } from '../takuzu/types'
 
 const taille = ref(4)
@@ -8,11 +8,17 @@ const taille = ref(4)
 const tailleCase = computed(() => 80 / taille.value)
 const taillechiffre = computed(() => tailleCase.value * 0.4)
 
+const solution = ref<Grille>([])
 const grille = ref<Grille>(creerGrilleVide(taille.value))
+const cellulesFixes = ref<boolean[][]>([])
 
 
 function changerCellule(indexLigne: number, indexCellule: number) {
   if (jeuTermine.value) {
+    return
+  }
+
+  if (cellulesFixes.value[indexLigne]?.[indexCellule]) {
     return
   }
   
@@ -41,7 +47,19 @@ function genererGrille() {
   if (jeuTermine.value) {
     return
   }
-  grille.value = creerGrilleAleatoire(taille.value)
+  solution.value = creerGrilleAleatoire(taille.value)
+
+  const nombreCasesVides = Math.floor(
+    (taille.value * taille.value) / 2
+  )
+
+  grille.value = creerGrilleJeu(
+    solution.value,
+    nombreCasesVides
+  )
+  cellulesFixes.value = grille.value.map(ligne =>
+    ligne.map(cellule => cellule !== null)
+  )
   jeuTermine.value = false
   messageValidation.value = ''
 }
@@ -98,7 +116,7 @@ const messageValidation = ref('')
     </div>
     <p v-if="messageValidation">{{ messageValidation }}</p>
 
-    <button @click="validerPartie">Valider</button>
+    <button :disabled="jeuTermine" @click="validerPartie">Valider</button>
     <button @click="recommencer">Recommencer</button>
     <button :disabled="jeuTermine" @click="genererGrille">Générer une grille</button>
 

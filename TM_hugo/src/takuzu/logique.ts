@@ -309,3 +309,30 @@ function ligneDejaPresente(
 
   return false
 }
+
+export function creerGrilleJeu(
+  solution: Grille,
+  nombreCasesVides: number
+): Grille {
+  const grilleJeu = solution.map(ligne => [...ligne])
+
+  let casesRetirees = 0
+
+  while (casesRetirees < nombreCasesVides) {
+    const indexLigne = Math.floor(Math.random() * grilleJeu.length)
+    const indexCellule = Math.floor(Math.random() * grilleJeu.length)
+
+    const ligne = grilleJeu[indexLigne]
+
+    if (ligne === undefined) {
+      continue
+    }
+
+    if (ligne[indexCellule] !== null) {
+      ligne[indexCellule] = null
+      casesRetirees++ 
+    }
+  }
+
+  return grilleJeu
+}
