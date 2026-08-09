@@ -132,7 +132,7 @@ function grilleInvalide(grille: Grille): boolean {
   )
 }
 
-function grilleComplete(grille: Grille): boolean {
+export function grilleComplete(grille: Grille): boolean {
   for (const ligne of grille) {
     for (const cellule of ligne) {
       if (cellule === null) {
@@ -335,4 +335,77 @@ export function creerGrilleJeu(
   }
 
   return grilleJeu
+}
+
+export function ligneAvecErreur(
+  grille: Grille,
+  indexLigne: number
+): boolean {
+  const ligne = grille[indexLigne]
+
+  if (ligne === undefined) {
+    return false
+  }
+
+  return (ligneInvalide(ligne) || ligneEnDouble(grille, indexLigne))
+}
+
+export function colonneAvecErreur(
+  grille: Grille,
+  indexColonne: number
+): boolean {
+  const colonne = obtenirColonne(grille, indexColonne)
+
+  return (ligneInvalide(colonne) || colonneEnDouble(grille, indexColonne))
+}
+
+function ligneEnDouble(
+  grille: Grille,
+  indexLigne: number
+): boolean {
+  const ligne = grille[indexLigne]
+
+  if (ligne === undefined) {
+    return false
+  }
+
+  for (let i = 0; i < grille.length; i++) {
+    if (i !== indexLigne) {
+      const autreLigne = grille[i]
+
+      if (
+        autreLigne !== undefined &&
+        lignesIdentiques(ligne, autreLigne)
+      ) {
+        return true
+      }
+    }
+  }
+
+  return false
+}
+
+function colonneEnDouble(
+  grille: Grille,
+  indexColonne: number
+): boolean {
+  const colonne = obtenirColonne(grille, indexColonne)
+
+  const premiereLigne = grille[0]
+
+  if (premiereLigne === undefined) {
+    return false
+  }
+
+  for (let i = 0; i < premiereLigne.length; i++) {
+    if (i !== indexColonne) {
+      const autreColonne = obtenirColonne(grille, i)
+
+      if (lignesIdentiques(colonne, autreColonne)) {
+        return true
+      }
+    }
+  }
+
+  return false
 }

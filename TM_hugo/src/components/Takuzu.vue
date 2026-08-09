@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { computed,ref } from 'vue'
-import { creerGrilleVide, partieGagnee, creerGrilleAleatoire, creerGrilleJeu } from '../takuzu/logique'
+import {
+  creerGrilleVide,
+  partieGagnee,
+  creerGrilleAleatoire,
+  creerGrilleJeu,
+  grilleComplete,
+  ligneAvecErreur,
+  colonneAvecErreur
+} from '../takuzu/logique'
 import type { Grille } from '../takuzu/types'
 
 const taille = ref(4)
@@ -11,6 +19,10 @@ const taillechiffre = computed(() => tailleCase.value * 0.4)
 const solution = ref<Grille>([])
 const grille = ref<Grille>(creerGrilleVide(taille.value))
 const cellulesFixes = ref<boolean[][]>([])
+const grilleInitiale = ref<Grille>(creerGrilleVide(taille.value))
+
+const lignesEnErreur = ref<number[]>([])
+const colonnesEnErreur = ref<number[]>([])
 
 
 function changerCellule(indexLigne: number, indexCellule: number) {
@@ -38,7 +50,11 @@ function changerCellule(indexLigne: number, indexCellule: number) {
 }
 
 function recommencer() {
-  grille.value = creerGrilleVide(taille.value)
+  grille.value = grilleInitiale.value.map(ligne => [...ligne])
+
+  lignesEnErreur.value = []
+  colonnesEnErreur.value = []
+
   jeuTermine.value = false
   messageValidation.value = ''
 }
@@ -53,32 +69,80 @@ function genererGrille() {
     (taille.value * taille.value) / 2
   )
 
-  grille.value = creerGrilleJeu(
+  grilleInitiale.value = creerGrilleJeu(
     solution.value,
     nombreCasesVides
   )
-  cellulesFixes.value = grille.value.map(ligne =>
+  grille.value = grilleInitiale.value.map(ligne => [...ligne]
+
+  )
+  cellulesFixes.value = grilleInitiale.value.map(ligne =>
     ligne.map(cellule => cellule !== null)
   )
+
+  lignesEnErreur.value = []
+  colonnesEnErreur.value = []
+
   jeuTermine.value = false
   messageValidation.value = ''
 }
 
 function validerPartie() {
+  lignesEnErreur.value = []
+  colonnesEnErreur.value = []
+  
+  if (!grilleComplete(grille.value)) {
+    messageValidation.value = 'La grille est incomplète'
+    return
+  }
+
   if (partieGagnee(grille.value)) {
     jeuTermine.value = true
-    messageValidation.value = 'Félicitations, vous avez gagné !'
+    messageValidation.value = 'VICTORY'
   } else {
-    messageValidation.value = 'La partie n\'est pas encore terminée.'
+    messageValidation.value = 'Il y a une erreur dans la grille'
+
+    chercherLignesEnErreur()
+    chercherColonnesEnErreur()
   }
 }
 
 const jeuTermine = ref(false)
 const messageValidation = ref('')
 
+function changerTaille() {
+  solution.value = []
 
+  grille.value = creerGrilleVide(taille.value)
+  grilleInitiale.value = creerGrilleVide(taille.value)
+  cellulesFixes.value = []
 
+  lignesEnErreur.value = []
+  colonnesEnErreur.value = []
+  
+  jeuTermine.value = false
+  messageValidation.value = ''
+}
 
+function chercherLignesEnErreur() {
+  lignesEnErreur.value = []
+
+  for (let i = 0; i < taille.value; i++) {
+    if (ligneAvecErreur(grille.value, i)) {
+      lignesEnErreur.value.push(i)
+    }
+  }
+}
+
+function chercherColonnesEnErreur() {
+  colonnesEnErreur.value = []
+
+  for (let j = 0; j < taille.value; j++) {
+    if (colonneAvecErreur(grille.value, j)) {
+      colonnesEnErreur.value.push(j)
+    }
+  }
+}
 </script>
 
 <template>
@@ -89,7 +153,7 @@ const messageValidation = ref('')
 
         <select
           v-model.number="taille"
-          @change="recommencer"
+          @change="changerTaille"
         >
           <option :value="4">4 × 4</option>
           <option :value="6">6 × 6</option>
@@ -103,6 +167,11 @@ const messageValidation = ref('')
         <div
           v-for="(cellule, indexCellule) in ligne"
           class="cellule"
+          :class="{
+            erreur:
+              lignesEnErreur.includes(indexLigne) ||
+              colonnesEnErreur.includes(indexCellule)
+          }"
           @click="changerCellule(indexLigne, indexCellule)"
           :style="{
             width: tailleCase + 'vmin',
@@ -117,8 +186,8 @@ const messageValidation = ref('')
     <p v-if="messageValidation">{{ messageValidation }}</p>
 
     <button :disabled="jeuTermine" @click="validerPartie">Valider</button>
-    <button @click="recommencer">Recommencer</button>
-    <button :disabled="jeuTermine" @click="genererGrille">Générer une grille</button>
+    <button :disabled="grilleInitiale.length === 0" @click="recommencer">Recommencer</button>
+    <button @click="genererGrille">Générer une grille</button>
 
   </div>
 </template>
@@ -141,6 +210,10 @@ const messageValidation = ref('')
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.cellule.erreur {
+  background-color: red;
 }
 
 button:disabled {
