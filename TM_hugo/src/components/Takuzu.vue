@@ -33,7 +33,14 @@ function changerCellule(indexLigne: number, indexCellule: number) {
   if (cellulesFixes.value[indexLigne]?.[indexCellule]) {
     return
   }
+
+  jouerSonClic()
   
+  lignesEnErreur.value = []
+  colonnesEnErreur.value = []
+  messageValidation.value = ''
+
+
   const ligne = grille.value[indexLigne]
 
   if (!ligne) {
@@ -143,52 +150,62 @@ function chercherColonnesEnErreur() {
     }
   }
 }
+
+const sonClic = new Audio('/son/touch.mp3')
+
+function jouerSonClic() {
+  sonClic.currentTime = 0
+  sonClic.play()
+}
 </script>
 
 <template>
   <div class="page">
-    <div>
+    <div class="jeu">
       <label>
         Taille de la grille :
-
-        <select
-          v-model.number="taille"
-          @change="changerTaille"
-        >
+        <select v-model.number="taille" :disabled="jeuTermine"@change="changerTaille">
           <option :value="4">4 × 4</option>
           <option :value="6">6 × 6</option>
           <option :value="8">8 × 8</option>
         </select>
       </label>
-      <div
-        v-for="(ligne, indexLigne) in grille"
-        class="ligne"
-      >
-        <div
-          v-for="(cellule, indexCellule) in ligne"
-          class="cellule"
-          :class="{
-            erreur:
-              lignesEnErreur.includes(indexLigne) ||
-              colonnesEnErreur.includes(indexCellule)
-          }"
-          @click="changerCellule(indexLigne, indexCellule)"
-          :style="{
-            width: tailleCase + 'vmin',
-            height: tailleCase + 'vmin',
-            fontSize: taillechiffre + 'vmin'
-          }"
-        >
-          {{ cellule }}
+
+      <div class="grille"
+      :class="{ 'grille-victoire': jeuTermine }">
+        <div class="triangle triangle-haut"></div>
+        <div class="triangle triangle-bas"></div>
+        <div class="triangle triangle-gauche"></div>
+        <div class="triangle triangle-droite"></div>
+
+        <div v-for="(ligne, indexLigne) in grille" class="ligne">
+          <div
+            v-for="(cellule, indexCellule) in ligne"
+            class="cellule"
+            :class="{
+              erreur: lignesEnErreur.includes(indexLigne) || colonnesEnErreur.includes(indexCellule),
+              fixe: cellulesFixes[indexLigne]?.[indexCellule],
+              zero: cellule === 0,
+              un: cellule === 1
+            }"
+            @click="changerCellule(indexLigne, indexCellule)"
+            :style="{
+              width: tailleCase + 'vmin',
+              height: tailleCase + 'vmin',
+              fontSize: taillechiffre + 'vmin'
+            }"
+          >
+            {{ cellule }}
+          </div>
         </div>
       </div>
     </div>
-    <p v-if="messageValidation">{{ messageValidation }}</p>
 
-    <button :disabled="jeuTermine" @click="validerPartie">Valider</button>
+    <p v-if="messageValidation" class="message" :class="{ victoire: jeuTermine}">{{ messageValidation }}</p>
+
+    <button :disabled="jeuTermine || grilleInitiale.length === 0" @click="validerPartie">Valider</button>
     <button :disabled="grilleInitiale.length === 0" @click="recommencer">Recommencer</button>
-    <button @click="genererGrille">Générer une grille</button>
-
+    <button :disabled="jeuTermine" @click="genererGrille">Générer une grille</button>
   </div>
 </template>
 
@@ -199,6 +216,17 @@ function chercherColonnesEnErreur() {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 15px;
+
+  background: linear-gradient(135deg, #eef2f7, #dfe7f1);
+  font-family: Arial, sans-serif;
+}
+
+.jeu {
+  background: white;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0, 12);
 }
 
 .ligne {
@@ -206,18 +234,192 @@ function chercherColonnesEnErreur() {
 }
 
 .cellule {
-  border: 1px solid black;
   display: flex;
   justify-content: center;
   align-items: center;
+  box-sizing: border-box;
+
+  border: 1px solid #d8dee8;
+  background: #ffffff;
+
+  font-weight: 500;
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s,
+    transform 0.1s,
+    box-shadow 0.15s;
+}
+
+.cellule:hover {
+  background: #f4f7fb;
+}
+
+.cellule:active {
+  transform: scale(0.94);
+}
+
+.cellule.zero {
+  color: #2563eb;
+}
+
+.cellule.un {
+  color: #e05a47;
+}
+
+.cellule.fixe {
+  font-weight: 800;
+  background: #f1f3f6;
+  cursor: default;
 }
 
 .cellule.erreur {
-  background-color: red;
+  background-color: #ffd6d6;
 }
 
 button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.grille {
+  position: relative;
+  width: fit-content;
+}
+
+.message {
+  margin: 10px 0;
+  padding: 10px 16px;
+  border-radius: 10px;
+
+  background: #fff1f1;
+  color: #b42318;
+  font-weight: 600;
+  text-align: center;
+}
+
+.message.victoire {
+  background: #ecfdf3;
+  color: #067647;
+}
+
+.message.victoire {
+  background: #ecfdf3;
+  color: #067647;
+  animation: victoire 0.5s ease;
+}
+
+@keyframes victoire {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  60% {
+    transform: scale(1.08);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.grille {
+  transition: transform 0.3s;
+}
+
+.grille-victoire {
+  transform: scale(1.02);
+}
+
+.triangle {
+  position: absolute;
+  background-color: black;
+  z-index: 10;
+}
+
+.triangle-haut {
+  width: 16px;
+  height: 16px;
+
+  top: 0;
+  left: 50%;
+
+  transform: translateX(-50%);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+
+.triangle-bas {
+  width: 16px;
+  height: 16px;
+
+  bottom: 0;
+  left: 50%;
+
+  transform: translateX(-50%);
+  clip-path: polygon(0 100%, 100% 100%, 50% 0);
+}
+
+.triangle-gauche {
+  width: 16px;
+  height: 16px;
+
+  left: 0;
+  top: 50%;
+
+  transform: translateY(-50%);
+  clip-path: polygon(0 0, 0 100%, 100% 50%);
+}
+
+.triangle-droite {
+  width: 16px;
+  height: 16px;
+
+  right: 0;
+  top: 50%;
+
+  transform: translateY(-50%);
+  clip-path: polygon(100% 0, 100% 100%, 0 50%);
+}
+
+select,
+button {
+  font-size: 1rem;
+  border-radius: 10px;
+  border: 1px solid #cfd6df;
+  padding: 8px 14px;
+}
+
+select {
+  background: white;
+  margin-left: 8px;
+}
+
+button {
+  background: #ffffff;
+  cursor: pointer;
+  transition:
+    transform 0.1s,
+    box-shadow 0.15s,
+    background-color 0.15s;
+}
+
+button:hover:not(:disabled) {
+  background: #f4f7fb;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+button {
+  margin: 4px;
 }
 </style>
