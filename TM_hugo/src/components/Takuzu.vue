@@ -13,7 +13,7 @@ import type { Grille } from '../takuzu/types'
 
 const taille = ref(4)
 
-const tailleCase = computed(() => 80 / taille.value)
+const tailleCase = computed(() => 62 / taille.value)
 const taillechiffre = computed(() => tailleCase.value * 0.4)
 
 const solution = ref<Grille>([])
@@ -100,14 +100,17 @@ function validerPartie() {
   
   if (!grilleComplete(grille.value)) {
     messageValidation.value = 'La grille est incomplète'
+    jouerSonErreur()
     return
   }
 
   if (partieGagnee(grille.value)) {
     jeuTermine.value = true
+    jouerSonVictoire()
     messageValidation.value = 'VICTORY'
   } else {
     messageValidation.value = 'Il y a une erreur dans la grille'
+    jouerSonErreur()
 
     chercherLignesEnErreur()
     chercherColonnesEnErreur()
@@ -151,25 +154,78 @@ function chercherColonnesEnErreur() {
   }
 }
 
-const sonClic = new Audio('/son/touch.mp3')
+const sonClic = new Audio('/sons/touch.mp3')
 
 function jouerSonClic() {
+  if (!sonActive.value) {
+    return
+  }
+  
   sonClic.currentTime = 0
   sonClic.play()
+}
+
+const sonErreur = new Audio('/sons/erreur.mp3')
+const sonVictoire = new Audio('/sons/victoire.mp3')
+
+function jouerSonErreur() {
+  if(!sonActive.value) {
+    return
+  }
+  
+  sonErreur.currentTime = 0
+  sonErreur.play()
+}
+
+function jouerSonVictoire() {
+  if(!sonActive.value) {
+    return
+  }
+  sonVictoire.currentTime = 0
+  sonVictoire.play()
+}
+
+const sonActive = ref(true)
+
+function changerSon() {
+  sonActive.value = !sonActive.value
+}
+
+const musiqueActive = ref(false)
+
+const musique = new Audio('/sons/musique.mp3')
+musique.loop = true
+musique.volume = 0.25
+
+function changerMusique() {
+  musiqueActive.value = !musiqueActive.value
+
+  if (musiqueActive.value) {
+    musique.play()
+  } else {
+    musique.pause()
+  }
 }
 </script>
 
 <template>
   <div class="page">
     <div class="jeu">
-      <label>
-        Taille de la grille :
-        <select v-model.number="taille" :disabled="jeuTermine"@change="changerTaille">
-          <option :value="4">4 × 4</option>
-          <option :value="6">6 × 6</option>
-          <option :value="8">8 × 8</option>
-        </select>
-      </label>
+      <div class="barre-haut">
+        <label>
+          Taille de la grille :
+          <select v-model.number="taille" :disabled="jeuTermine"@change="changerTaille">
+           <option :value="4">4 × 4</option>
+           <option :value="6">6 × 6</option>
+           <option :value="8">8 × 8</option>
+         </select>
+        </label>
+
+        <div class="boutons-son">
+          <button @click="changerSon">{{ sonActive ? '🔊' : '🔇' }}</button>
+          <button @click="changerMusique">{{ musiqueActive ? '🎵 ON' : '🎵 OFF' }}</button>
+        </div>
+      </div>
 
       <div class="grille"
       :class="{ 'grille-victoire': jeuTermine }">
@@ -203,9 +259,11 @@ function jouerSonClic() {
 
     <p v-if="messageValidation" class="message" :class="{ victoire: jeuTermine}">{{ messageValidation }}</p>
 
-    <button :disabled="jeuTermine || grilleInitiale.length === 0" @click="validerPartie">Valider</button>
-    <button :disabled="grilleInitiale.length === 0" @click="recommencer">Recommencer</button>
-    <button :disabled="jeuTermine" @click="genererGrille">Générer une grille</button>
+    <div class="boutons-jeu">
+  <button :disabled="jeuTermine || grilleInitiale.length === 0" @click="validerPartie">Valider</button>
+  <button :disabled="grilleInitiale.length === 0" @click="recommencer">Recommencer</button>
+  <button :disabled="jeuTermine" @click="genererGrille">Générer une grille</button>
+</div>
   </div>
 </template>
 
@@ -216,7 +274,7 @@ function jouerSonClic() {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 15px;
+  gap: 10px;
 
   background: linear-gradient(135deg, #eef2f7, #dfe7f1);
   font-family: Arial, sans-serif;
@@ -224,9 +282,9 @@ function jouerSonClic() {
 
 .jeu {
   background: white;
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0, 12);
+  padding: 18px 22px;
+  border-radius: 16px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
 }
 
 .ligne {
@@ -383,6 +441,26 @@ button:disabled {
   clip-path: polygon(100% 0, 100% 100%, 0 50%);
 }
 
+.boutons-jeu {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.barre-haut {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.boutons-son {
+  display: flex;
+  gap: 8px;
+}
+
 select,
 button {
   font-size: 1rem;
@@ -422,4 +500,6 @@ button:disabled {
 button {
   margin: 4px;
 }
+
+
 </style>
