@@ -26,8 +26,8 @@ const colonnesEnErreur = ref<number[]>([])
 
 
 function changerCellule(indexLigne: number, indexCellule: number) {
-  if (jeuTermine.value) {
-    return
+  if (jeuTermine.value || nombreErreurs.value >= 3) {
+  return
   }
 
   if (cellulesFixes.value[indexLigne]?.[indexCellule]) {
@@ -64,6 +64,11 @@ function recommencer() {
 
   jeuTermine.value = false
   messageValidation.value = ''
+
+  secondesEcoulees.value = 0
+  demarrerChrono()
+
+  nombreErreurs.value = 0
 }
 
 function genererGrille() {
@@ -92,6 +97,11 @@ function genererGrille() {
 
   jeuTermine.value = false
   messageValidation.value = ''
+
+  secondesEcoulees.value = 0
+  demarrerChrono()
+
+  nombreErreurs.value = 0
 }
 
 function validerPartie() {
@@ -107,13 +117,21 @@ function validerPartie() {
   if (partieGagnee(grille.value)) {
     jeuTermine.value = true
     jouerSonVictoire()
-    messageValidation.value = 'VICTORY'
+    messageValidation.value = 'VICTOIRE !'
+    arreterChrono()
   } else {
     messageValidation.value = 'Il y a une erreur dans la grille'
     jouerSonErreur()
 
+    nombreErreurs.value++
+
     chercherLignesEnErreur()
     chercherColonnesEnErreur()
+
+    if (nombreErreurs.value >= 3) {
+      messageValidation.value = '3 erreurs — partie terminée'
+      arreterChrono()
+    }
   }
 }
 
@@ -132,6 +150,11 @@ function changerTaille() {
   
   jeuTermine.value = false
   messageValidation.value = ''
+
+  secondesEcoulees.value = 0
+  arreterChrono()
+
+  nombreErreurs.value = 0
 }
 
 function chercherLignesEnErreur() {
@@ -195,7 +218,7 @@ const musiqueActive = ref(false)
 
 const musique = new Audio('/sons/musique.mp3')
 musique.loop = true
-musique.volume = 0.25
+musique.volume = 0.05
 
 function changerMusique() {
   musiqueActive.value = !musiqueActive.value
@@ -206,18 +229,55 @@ function changerMusique() {
     musique.pause()
   }
 }
+
+const secondesEcoulees = ref(0)
+
+const chrono = computed(() => {
+  const minutes = Math.floor(secondesEcoulees.value / 60)
+  const secondes = secondesEcoulees.value % 60
+
+  return (
+    String(minutes).padStart(2, '0') +
+    ':' +
+    String(secondes).padStart(2, '0')
+  )
+})
+
+let intervalChrono: number | undefined
+
+function demarrerChrono() {
+  arreterChrono()
+
+  intervalChrono = window.setInterval(() => {
+    secondesEcoulees.value++
+  }, 1000)
+}
+
+function arreterChrono() {
+  if (intervalChrono !== undefined) {
+    clearInterval(intervalChrono)
+    intervalChrono = undefined
+  }
+}
+
+const nombreErreurs = ref(0)
 </script>
 
 <template>
   <div class="page">
     <div class="jeu">
+      <h1 class="titre">Takuzu</h1>
+      <div class="infos-partie">
+        <span>⏱ {{ chrono }}</span>
+        <span>❌ {{ nombreErreurs }} / 3</span>
+      </div>
       <div class="barre-haut">
         <label>
           Taille de la grille :
           <select v-model.number="taille" :disabled="jeuTermine"@change="changerTaille">
-           <option :value="4">4 × 4</option>
-           <option :value="6">6 × 6</option>
-           <option :value="8">8 × 8</option>
+           <option :value="4">Facile</option>
+           <option :value="6">Moyen</option>
+           <option :value="8">Difficile</option>
          </select>
         </label>
 
@@ -241,6 +301,8 @@ function changerMusique() {
             :class="{
               erreur: lignesEnErreur.includes(indexLigne) || colonnesEnErreur.includes(indexCellule),
               fixe: cellulesFixes[indexLigne]?.[indexCellule],
+              jouable: !cellulesFixes[indexLigne]?.[indexCellule] &&
+              !jeuTermine && nombreErreurs < 3,
               zero: cellule === 0,
               un: cellule === 1
             }"
@@ -260,14 +322,23 @@ function changerMusique() {
     <p v-if="messageValidation" class="message" :class="{ victoire: jeuTermine}">{{ messageValidation }}</p>
 
     <div class="boutons-jeu">
-  <button :disabled="jeuTermine || grilleInitiale.length === 0" @click="validerPartie">Valider</button>
+  <button :disabled="jeuTermine || nombreErreurs >= 3 || grilleInitiale.length === 0" @click="validerPartie">Valider</button>
   <button :disabled="grilleInitiale.length === 0" @click="recommencer">Recommencer</button>
-  <button :disabled="jeuTermine" @click="genererGrille">Générer une grille</button>
+  <button :disabled="jeuTermine || nombreErreurs >= 3" @click="genererGrille">Générer une grille</button>
 </div>
   </div>
 </template>
 
 <style scoped>
+.infos-partie {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 8px 0;
+  font-weight: 600;
+  color: #344054;
+}
+
 .page {
   min-height: 100vh;
   display: flex;
@@ -278,6 +349,14 @@ function changerMusique() {
 
   background: linear-gradient(135deg, #eef2f7, #dfe7f1);
   font-family: Arial, sans-serif;
+}
+
+.titre {
+  margin: 0 0 15px;
+  text-align: center;
+  font-size: 2rem;
+  letter-spacing: 4px;
+  color: #344054
 }
 
 .jeu {
@@ -309,11 +388,16 @@ function changerMusique() {
     box-shadow 0.15s;
 }
 
-.cellule:hover {
-  background: #f4f7fb;
+.cellule.jouable {
+  cursor: pointer;
 }
 
-.cellule:active {
+.cellule.jouable:hover {
+  background: #f4f7fb;
+  box-shadow: inset 0 0 0 2px #cbd5e1;
+}
+
+.cellule.jouable:active {
   transform: scale(0.94);
 }
 
@@ -343,6 +427,9 @@ button:disabled {
 .grille {
   position: relative;
   width: fit-content;
+  margin: 15px auto;
+  border: 2px solid #344054;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);
 }
 
 .message {
