@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed,ref } from 'vue'
+import { computed, ref } from 'vue'
 import {
   creerGrilleVide,
   partieGagnee,
@@ -24,10 +24,9 @@ const grilleInitiale = ref<Grille>(creerGrilleVide(taille.value))
 const lignesEnErreur = ref<number[]>([])
 const colonnesEnErreur = ref<number[]>([])
 
-
 function changerCellule(indexLigne: number, indexCellule: number) {
   if (jeuTermine.value || nombreErreurs.value >= 3) {
-  return
+    return
   }
 
   if (cellulesFixes.value[indexLigne]?.[indexCellule]) {
@@ -35,11 +34,9 @@ function changerCellule(indexLigne: number, indexCellule: number) {
   }
 
   jouerSonClic()
-  
   lignesEnErreur.value = []
   colonnesEnErreur.value = []
   messageValidation.value = ''
-
 
   const ligne = grille.value[indexLigne]
 
@@ -75,6 +72,7 @@ function genererGrille() {
   if (jeuTermine.value) {
     return
   }
+
   solution.value = creerGrilleAleatoire(taille.value)
 
   const nombreCasesVides = Math.floor(
@@ -85,9 +83,9 @@ function genererGrille() {
     solution.value,
     nombreCasesVides
   )
-  grille.value = grilleInitiale.value.map(ligne => [...ligne]
 
-  )
+  grille.value = grilleInitiale.value.map(ligne => [...ligne])
+
   cellulesFixes.value = grilleInitiale.value.map(ligne =>
     ligne.map(cellule => cellule !== null)
   )
@@ -107,7 +105,7 @@ function genererGrille() {
 function validerPartie() {
   lignesEnErreur.value = []
   colonnesEnErreur.value = []
-  
+
   if (!grilleComplete(grille.value)) {
     messageValidation.value = 'La grille est incomplète'
     jouerSonErreur()
@@ -147,7 +145,6 @@ function changerTaille() {
 
   lignesEnErreur.value = []
   colonnesEnErreur.value = []
-  
   jeuTermine.value = false
   messageValidation.value = ''
 
@@ -183,7 +180,7 @@ function jouerSonClic() {
   if (!sonActive.value) {
     return
   }
-  
+
   sonClic.currentTime = 0
   sonClic.play()
 }
@@ -192,18 +189,19 @@ const sonErreur = new Audio('/sons/erreur.mp3')
 const sonVictoire = new Audio('/sons/victoire.mp3')
 
 function jouerSonErreur() {
-  if(!sonActive.value) {
+  if (!sonActive.value) {
     return
   }
-  
+
   sonErreur.currentTime = 0
   sonErreur.play()
 }
 
 function jouerSonVictoire() {
-  if(!sonActive.value) {
+  if (!sonActive.value) {
     return
   }
+
   sonVictoire.currentTime = 0
   sonVictoire.play()
 }
@@ -267,18 +265,20 @@ const nombreErreurs = ref(0)
   <div class="page">
     <div class="jeu">
       <h1 class="titre">Takuzu</h1>
+
       <div class="infos-partie">
         <span>⏱ {{ chrono }}</span>
         <span>❌ {{ nombreErreurs }} / 3</span>
       </div>
+
       <div class="barre-haut">
         <label>
           Taille de la grille :
-          <select v-model.number="taille" :disabled="jeuTermine"@change="changerTaille">
-           <option :value="4">Facile</option>
-           <option :value="6">Moyen</option>
-           <option :value="8">Difficile</option>
-         </select>
+          <select v-model.number="taille" :disabled="jeuTermine" @change="changerTaille">
+            <option :value="4">Facile</option>
+            <option :value="6">Moyen</option>
+            <option :value="8">Difficile</option>
+          </select>
         </label>
 
         <div class="boutons-son">
@@ -287,8 +287,7 @@ const nombreErreurs = ref(0)
         </div>
       </div>
 
-      <div class="grille"
-      :class="{ 'grille-victoire': jeuTermine }">
+      <div class="grille" :class="{ 'grille-victoire': jeuTermine }">
         <div class="triangle triangle-haut"></div>
         <div class="triangle triangle-bas"></div>
         <div class="triangle triangle-gauche"></div>
@@ -301,8 +300,7 @@ const nombreErreurs = ref(0)
             :class="{
               erreur: lignesEnErreur.includes(indexLigne) || colonnesEnErreur.includes(indexCellule),
               fixe: cellulesFixes[indexLigne]?.[indexCellule],
-              jouable: !cellulesFixes[indexLigne]?.[indexCellule] &&
-              !jeuTermine && nombreErreurs < 3,
+              jouable: !cellulesFixes[indexLigne]?.[indexCellule] && !jeuTermine && nombreErreurs < 3,
               zero: cellule === 0,
               un: cellule === 1
             }"
@@ -319,13 +317,29 @@ const nombreErreurs = ref(0)
       </div>
     </div>
 
-    <p v-if="messageValidation" class="message" :class="{ victoire: jeuTermine}">{{ messageValidation }}</p>
+    <p v-if="messageValidation" class="message" :class="{ victoire: jeuTermine }">
+      {{ messageValidation }}
+    </p>
 
     <div class="boutons-jeu">
-  <button :disabled="jeuTermine || nombreErreurs >= 3 || grilleInitiale.length === 0" @click="validerPartie">Valider</button>
-  <button :disabled="grilleInitiale.length === 0" @click="recommencer">Recommencer</button>
-  <button :disabled="jeuTermine || nombreErreurs >= 3" @click="genererGrille">Générer une grille</button>
-</div>
+      <button
+        :disabled="jeuTermine || nombreErreurs >= 3 || grilleInitiale.length === 0"
+        @click="validerPartie"
+      >
+        Valider
+      </button>
+
+      <button :disabled="grilleInitiale.length === 0" @click="recommencer">
+        Recommencer
+      </button>
+
+      <button
+        :disabled="jeuTermine || nombreErreurs >= 3"
+        @click="genererGrille"
+      >
+        Générer une grille
+      </button>
+    </div>
   </div>
 </template>
 
@@ -346,7 +360,6 @@ const nombreErreurs = ref(0)
   justify-content: center;
   align-items: center;
   gap: 10px;
-
   background: linear-gradient(135deg, #eef2f7, #dfe7f1);
   font-family: Arial, sans-serif;
 }
@@ -356,7 +369,7 @@ const nombreErreurs = ref(0)
   text-align: center;
   font-size: 2rem;
   letter-spacing: 4px;
-  color: #344054
+  color: #344054;
 }
 
 .jeu {
@@ -375,13 +388,10 @@ const nombreErreurs = ref(0)
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
-
   border: 1px solid #d8dee8;
   background: #ffffff;
-
   font-weight: 500;
   cursor: pointer;
-
   transition:
     background-color 0.15s,
     transform 0.1s,
@@ -419,33 +429,23 @@ const nombreErreurs = ref(0)
   background-color: #ffd6d6;
 }
 
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 .grille {
   position: relative;
   width: fit-content;
   margin: 15px auto;
   border: 2px solid #344054;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);
+  transition: transform 0.3s;
 }
 
 .message {
   margin: 10px 0;
   padding: 10px 16px;
   border-radius: 10px;
-
   background: #fff1f1;
   color: #b42318;
   font-weight: 600;
   text-align: center;
-}
-
-.message.victoire {
-  background: #ecfdf3;
-  color: #067647;
 }
 
 .message.victoire {
@@ -470,10 +470,6 @@ button:disabled {
   }
 }
 
-.grille {
-  transition: transform 0.3s;
-}
-
 .grille-victoire {
   transform: scale(1.02);
 }
@@ -487,10 +483,8 @@ button:disabled {
 .triangle-haut {
   width: 16px;
   height: 16px;
-
   top: 0;
   left: 50%;
-
   transform: translateX(-50%);
   clip-path: polygon(0 0, 100% 0, 50% 100%);
 }
@@ -498,10 +492,8 @@ button:disabled {
 .triangle-bas {
   width: 16px;
   height: 16px;
-
   bottom: 0;
   left: 50%;
-
   transform: translateX(-50%);
   clip-path: polygon(0 100%, 100% 100%, 50% 0);
 }
@@ -509,10 +501,8 @@ button:disabled {
 .triangle-gauche {
   width: 16px;
   height: 16px;
-
   left: 0;
   top: 50%;
-
   transform: translateY(-50%);
   clip-path: polygon(0 0, 0 100%, 100% 50%);
 }
@@ -520,10 +510,8 @@ button:disabled {
 .triangle-droite {
   width: 16px;
   height: 16px;
-
   right: 0;
   top: 50%;
-
   transform: translateY(-50%);
   clip-path: polygon(100% 0, 100% 100%, 0 50%);
 }
@@ -564,6 +552,7 @@ select {
 button {
   background: #ffffff;
   cursor: pointer;
+  margin: 4px;
   transition:
     transform 0.1s,
     box-shadow 0.15s,
@@ -583,10 +572,4 @@ button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
 }
-
-button {
-  margin: 4px;
-}
-
-
 </style>
