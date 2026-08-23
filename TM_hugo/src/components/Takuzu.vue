@@ -76,7 +76,7 @@ function genererGrille() {
   solution.value = creerGrilleAleatoire(taille.value)
 
   const nombreCasesVides = Math.floor(
-    (taille.value * taille.value) / 2
+    (taille.value * taille.value) * 0.6
   )
 
   grilleInitiale.value = creerGrilleJeu(

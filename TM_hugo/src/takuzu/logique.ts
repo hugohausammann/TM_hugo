@@ -38,6 +38,7 @@ function contientTroisConsecutifs(ligne: Ligne): boolean {
   return false
 }
 
+
 function contientTropDeValeurs(
   ligne: Ligne,
   tailleComplete: number = ligne.length
@@ -271,28 +272,51 @@ export function creerGrilleAleatoire(taille: number): Grille {
   }
 }
 
+function essayerEnleverCase(grille: Grille): boolean {
+  const i = Math.floor(Math.random() * grille.length)
+  const j = Math.floor(Math.random() * grille.length)
+
+  const ligne = grille[i]
+
+  if (!ligne || ligne[j] === null) {
+    return false
+  }
+
+  const valeur = ligne[j]
+  ligne[j] = null
+
+  if (grilleResoluble(grille)) {
+    return true
+  }
+
+  if (valeur !== undefined && valeur !== null) {
+    ligne[j] = valeur
+  }
+  return false
+}
+
 export function creerGrilleJeu(
   solution: Grille,
   nombreCasesVides: number
 ): Grille {
-  const grilleJeu = solution.map(ligne => [...ligne])
-  let casesRetirees = 0
+  while (true) {
+    const grille = solution.map(ligne => [...ligne])
+    let casesRetirees = 0
+    let essais = 0
 
-  while (casesRetirees < nombreCasesVides) {
-    const indexLigne = Math.floor(Math.random() * grilleJeu.length)
-    const indexCellule = Math.floor(Math.random() * grilleJeu.length)
-
-    const ligne = grilleJeu[indexLigne]
-
-    if (!ligne || ligne[indexCellule] === null) {
-      continue
+    while (casesRetirees < nombreCasesVides && essais < 500) {
+      if (essayerEnleverCase(grille)) {
+        casesRetirees++
+        essais = 0
+      } else {
+        essais++
+      }
     }
 
-    ligne[indexCellule] = null
-    casesRetirees++
+    if (casesRetirees === nombreCasesVides) {
+      return grille
+    }
   }
-
-  return grilleJeu
 }
 
 export function ligneAvecErreur(
@@ -371,4 +395,42 @@ function colonneEnDouble(
   }
 
   return false
+}
+
+function remplirUneCase(grille: Grille): boolean {
+  for (const ligne of grille) {
+    for (let i = 0; i < ligne.length; i++) {
+
+      if (ligne[i] === null) {
+        ligne[i] = 0
+        const zeroValide = !grilleInvalide(grille)
+
+        ligne[i] = 1
+        const unValide = !grilleInvalide(grille)
+
+        ligne[i] = null
+
+        if (zeroValide && !unValide) {
+          ligne[i] = 0
+          return true
+        }
+
+        if (unValide && !zeroValide) {
+          ligne[i] = 1
+          return true
+        }
+      }
+    }
+  }
+
+  return false
+}
+
+function grilleResoluble(grille: Grille): boolean {
+  const copie = grille.map(ligne => [...ligne])
+
+  while (remplirUneCase(copie)) {
+  }
+
+  return grilleComplete(copie)
 }
