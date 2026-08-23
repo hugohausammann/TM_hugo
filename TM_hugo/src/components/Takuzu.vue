@@ -259,10 +259,46 @@ function arreterChrono() {
 }
 
 const nombreErreurs = ref(0)
+
+// Easters Eggs
+
+const modeSombre = ref(false)
+const modeCouleur = ref(false)
+
+let code = ''
+
+window.addEventListener('keydown', (event) => {
+  code = code + event.key
+
+  if (code === '1234') {
+    secondesEcoulees.value = 0
+    code = ''
+  }
+
+  if (code === 'dark') {
+    modeSombre.value = !modeSombre.value
+    code = ''
+  }
+
+  if (code === 'color') {
+    modeCouleur.value = !modeCouleur.value
+    code = ''
+  }
+
+  if (code.length >= 5) {
+    code = ''
+  }
+})
+
 </script>
 
 <template>
-  <div class="page">
+  <div class="page" :class="{sombre: modeSombre}">
+    <div
+      class="coin-secret"
+      @click="messageValidation = '🥚 Bien joué, tu as trouvé l\'un des 4 easter eggs'"
+    >
+    </div>
     <div class="jeu">
       <h1 class="titre">Takuzu</h1>
 
@@ -302,7 +338,9 @@ const nombreErreurs = ref(0)
               fixe: cellulesFixes[indexLigne]?.[indexCellule],
               jouable: !cellulesFixes[indexLigne]?.[indexCellule] && !jeuTermine && nombreErreurs < 3,
               zero: cellule === 0,
-              un: cellule === 1
+              un: cellule === 1,
+              zeroSecret: cellule === 0 && modeCouleur,
+              unSecret: cellule === 1 && modeCouleur
             }"
             @click="changerCellule(indexLigne, indexCellule)"
             :style="{
@@ -534,6 +572,37 @@ const nombreErreurs = ref(0)
 .boutons-son {
   display: flex;
   gap: 8px;
+}
+
+.page.sombre {
+  background: #111;
+}
+
+.page.sombre .jeu {
+  background: #222;
+  color: white;
+}
+
+.page.sombre select {
+  background: #333;
+  color: white;
+}
+
+.zeroSecret {
+  background: purple;
+}
+
+.unSecret {
+  background: green;
+}
+
+.coin-secret {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
 }
 
 select,
