@@ -264,10 +264,19 @@ const nombreErreurs = ref(0)
 
 const modeSombre = ref(false)
 const modeCouleur = ref(false)
+const skin = ref('')
+const chronoBizarre = ref(false)
+const afficherEasterEggs = ref(false)
 
 let code = ''
 
 window.addEventListener('keydown', (event) => {
+  
+  if (event.key === ' ') {
+    code = ''
+    return
+  }
+  
   code = code + event.key
 
   if (code === '1234') {
@@ -277,6 +286,7 @@ window.addEventListener('keydown', (event) => {
 
   if (code === 'dark') {
     modeSombre.value = !modeSombre.value
+    skin.value = ''
     code = ''
   }
 
@@ -285,7 +295,43 @@ window.addEventListener('keydown', (event) => {
     code = ''
   }
 
-  if (code.length >= 5) {
+  if (code === 'pink') {
+    skin.value = 'pink'
+    modeSombre.value = false
+    code = ''
+  }
+
+  if (code === 'water') {
+    skin.value = 'water'
+    modeSombre.value = false
+    code = ''
+  }
+
+  if (code === 'swiss') {
+    skin.value = 'swiss'
+    modeSombre.value = false
+    code = ''
+  }
+
+  if (code === 'time') {
+    chronoBizarre.value = !chronoBizarre.value
+    code = ''
+  }
+
+  if (code === 'solve') {
+    grille.value = solution.value.map(ligne => [...ligne])
+    code = ''
+  }
+
+  if (code === 'normal') {
+    skin.value = ''
+    modeSombre.value = false
+    modeCouleur.value = false
+    chronoBizarre.value = false
+    code = ''
+  }
+
+  if (code.length > 6) {
     code = ''
   }
 })
@@ -293,17 +339,36 @@ window.addEventListener('keydown', (event) => {
 </script>
 
 <template>
-  <div class="page" :class="{sombre: modeSombre}">
+  <div 
+    class="page" 
+    :class="{
+      sombre: modeSombre,
+      pink: skin === 'pink',
+      swiss: skin === 'swiss',
+      water: skin === 'water'
+    }">
     <div
       class="coin-secret"
-      @click="messageValidation = '🥚 Bien joué, tu as trouvé l\'un des 4 easter eggs'"
-    >
+      @click="afficherEasterEggs = !afficherEasterEggs"
+    ></div>
+    <div class="liste-easter-eggs" v-if="afficherEasterEggs">
+      <p><b>🥚 Easter Eggs</b></p>
+      <p>1234 → Reset chrono</p>
+      <p>dark → Mode sombre</p>
+      <p>color → Couleurs secrètes</p>
+      <p>pink → Skin Pink</p>
+      <p>water → Skin Water</p>
+      <p>swiss → Skin Swiss</p>
+      <p>time → Chrono bizarre</p>
+      <p>solve → Solution</p>
+      <p>normal → Retour normal</p>
     </div>
+  
     <div class="jeu">
       <h1 class="titre">Takuzu</h1>
 
       <div class="infos-partie">
-        <span>⏱ {{ chrono }}</span>
+        <span>⏱ {{ chronoBizarre ? '99:99' : chrono }}</span>
         <span>❌ {{ nombreErreurs }} / 3</span>
       </div>
 
@@ -574,6 +639,32 @@ window.addEventListener('keydown', (event) => {
   gap: 8px;
 }
 
+.coin-secret {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  z-index: 20;
+}
+
+.liste-easter-eggs {
+  position: fixed;
+  top: 35px;
+  right: 10px;
+  background: white;
+  color: black;
+  padding: 10px;
+  border: 1px solid black;
+  border-radius: 8px;
+  z-index: 20;
+}
+
+.liste-easter-eggs p {
+  margin: 4px;
+}
+
 .page.sombre {
   background: #111;
 }
@@ -589,20 +680,86 @@ window.addEventListener('keydown', (event) => {
 }
 
 .zeroSecret {
-  background: purple;
+  background: purple !important;
 }
 
 .unSecret {
-  background: green;
+  background: green !important;
 }
 
-.coin-secret {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 30px;
-  height: 30px;
-  cursor: pointer;
+.page.pink {
+  background: pink;
+}
+
+.page.pink .jeu {
+  background: #ffe5f0;
+  color: purple;
+}
+
+.page.pink .zero {
+  background: hotpink;
+}
+
+.page.pink .un {
+  background: purple;
+}
+
+.page.pink select {
+  background: pink;
+  color: purple;
+}
+
+.page.water {
+  background: lightblue;
+}
+
+.page.water .jeu {
+  background: #e0f7ff;
+  color: #006994;
+}
+
+.page.water .zero {
+  background: deepskyblue;
+}
+
+.page.water .un {
+  background: dodgerblue;
+}
+
+.page.water select {
+  background: lightblue;
+  color: #006994;
+}
+
+.page.swiss {
+  background: red;
+}
+
+.page.swiss .jeu {
+  background: white;
+  color: red;
+}
+
+.page.swiss .zero {
+  background: red;
+}
+
+.page.swiss .un {
+  background: white;
+  color: red;
+}
+
+.page.swiss select {
+  background: white;
+  color: red;
+}
+
+.page.pink .fixe,
+.page.water .fixe,
+.page.swiss .fixe,
+.page.sombre .fixe {
+  font-weight: 900;
+  font-size: 1.1em;
 }
 
 select,
