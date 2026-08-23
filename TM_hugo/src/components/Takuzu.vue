@@ -320,6 +320,7 @@ window.addEventListener('keydown', (event) => {
 
   if (code === 'solve') {
     grille.value = solution.value.map(ligne => [...ligne])
+    validerPartie()
     code = ''
   }
 
@@ -352,14 +353,14 @@ window.addEventListener('keydown', (event) => {
       @click="afficherEasterEggs = !afficherEasterEggs"
     ></div>
     <div class="liste-easter-eggs" v-if="afficherEasterEggs">
-      <p><b>🥚 Easter Eggs</b></p>
-      <p>1234 → Reset chrono</p>
+      <p><b>🥚 Easter Eggs !</b></p>
+      <p>1234 → Chrono à 0</p>
       <p>dark → Mode sombre</p>
       <p>color → Couleurs secrètes</p>
-      <p>pink → Skin Pink</p>
-      <p>water → Skin Water</p>
-      <p>swiss → Skin Swiss</p>
-      <p>time → Chrono bizarre</p>
+      <p>pink → Skin Rose</p>
+      <p>water → Skin Eau</p>
+      <p>swiss → Skin Suisse</p>
+      <p>time → Chrono à 99:99</p>
       <p>solve → Solution</p>
       <p>normal → Retour normal</p>
     </div>
@@ -379,6 +380,7 @@ window.addEventListener('keydown', (event) => {
             <option :value="4">Facile</option>
             <option :value="6">Moyen</option>
             <option :value="8">Difficile</option>
+            <option :value="12">Expert</option>
           </select>
         </label>
 
@@ -672,6 +674,19 @@ window.addEventListener('keydown', (event) => {
 .page.sombre .jeu {
   background: #222;
   color: white;
+}
+
+.page.sombre .grille {
+  background: black;
+}
+
+.page.sombre .cellule {
+  background: black;
+  color: white;
+}
+
+.page.sombre .boutons-son {
+  color: black;
 }
 
 .page.sombre select {
