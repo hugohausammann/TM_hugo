@@ -9,7 +9,7 @@ import {
   ligneAvecErreur,
   colonneAvecErreur
 } from '../takuzu/logique'
-import type { Grille } from '../takuzu/types'
+import type { Grille, Ligne } from '../takuzu/types'
 
 const taille = ref(4)
 
@@ -23,6 +23,7 @@ const grilleInitiale = ref<Grille>(creerGrilleVide(taille.value))
 
 const lignesEnErreur = ref<number[]>([])
 const colonnesEnErreur = ref<number[]>([])
+
 
 function changerCellule(indexLigne: number, indexCellule: number) {
   if (jeuTermine.value || nombreErreurs.value >= 3) {
@@ -116,6 +117,7 @@ function validerPartie() {
     jeuTermine.value = true
     jouerSonVictoire()
     messageValidation.value = 'VICTOIRE !'
+    enregistrerRecord()
     arreterChrono()
   } else {
     messageValidation.value = 'Il y a une erreur dans la grille'
@@ -260,6 +262,56 @@ function arreterChrono() {
 
 const nombreErreurs = ref(0)
 
+const record4 = ref(0)
+const record6 = ref(0)
+const record8 = ref(0)
+const record12 = ref(0)
+
+function enregistrerRecord() {
+  if (taille.value === 4) {
+    if (record4.value === 0 || secondesEcoulees.value < record4.value) {
+      record4.value = secondesEcoulees.value
+    }
+  }
+
+  if (taille.value === 6) {
+    if (record6.value === 0 || secondesEcoulees.value < record6.value) {
+      record6.value = secondesEcoulees.value
+    }
+  }
+
+  if (taille.value === 8) {
+    if (record8.value === 0 || secondesEcoulees.value < record8.value) {
+      record8.value = secondesEcoulees.value
+    }
+  }
+
+  if (taille.value === 12) {
+    if (record12.value === 0 || secondesEcoulees.value < record12.value) {
+      record12.value = secondesEcoulees.value
+    }
+  }
+}
+
+function afficherRecord() {
+  let record = 0
+
+  if (taille.value === 4) record = record4.value
+  if (taille.value === 6) record = record6.value
+  if (taille.value === 8) record = record8.value
+  if (taille.value === 12) record = record12.value
+
+  if (record === 0) {
+    return '--:--'
+  }
+
+  const minutes = Math.floor(record / 60)
+  const secondes = record % 60
+
+  return String(minutes).padStart(2, '0') + ':' +
+         String(secondes).padStart(2, '0')
+}
+
 // Easters Eggs
 
 const modeSombre = ref(false)
@@ -337,6 +389,31 @@ window.addEventListener('keydown', (event) => {
   }
 })
 
+function nombreManquant(ligne: Ligne, valeur: 0 | 1) {
+  let nombrePresent = 0
+
+  for (const cellule of ligne) {
+    if (cellule === valeur) {
+      nombrePresent++
+    }
+  }
+
+  return taille.value / 2 - nombrePresent
+}
+
+function colonneManquante(indexColonne: number, valeur: 0 | 1) {
+  let nombrePresent = 0
+
+  for (const ligne of grille.value) {
+    if (ligne[indexColonne] === valeur) {
+      nombrePresent++
+    }
+  }
+
+  return taille.value / 2 - nombrePresent
+}
+
+const aideActive = ref(false)
 </script>
 
 <template>
@@ -371,6 +448,7 @@ window.addEventListener('keydown', (event) => {
       <div class="infos-partie">
         <span>⏱ {{ chronoBizarre ? '99:99' : chrono }}</span>
         <span>❌ {{ nombreErreurs }} / 3</span>
+        <span>🏆 {{ afficherRecord() }}</span>
       </div>
 
       <div class="barre-haut">
@@ -418,7 +496,26 @@ window.addEventListener('keydown', (event) => {
           >
             {{ cellule }}
           </div>
+          <div class="compteur-ligne"
+          v-if ="aideActive"
+          >
+            0: {{ nombreManquant(ligne, 0) }}
+            1: {{ nombreManquant(ligne, 1) }}
+          </div>
         </div>
+      </div>
+    <div
+      class="compteurs-colonnes"
+      v-if="aideActive"
+      :style="{ gridTemplateColumns: 'repeat(' + taille + ', 1fr)' }"
+    >
+      <div
+        v-for="index in taille"
+        :key="index"
+        class="compteur-colonne"
+      >
+        0: {{ colonneManquante(index - 1, 0) }}<br>
+        1: {{ colonneManquante(index - 1, 1) }}
       </div>
     </div>
 
@@ -444,11 +541,43 @@ window.addEventListener('keydown', (event) => {
       >
         Générer une grille
       </button>
+      <button @click="aideActive = !aideActive">
+        💡
+      </button>
+    </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.compteurs-colonnes {
+  display: grid;
+  width: 62vmin;
+  margin-top: 5px;
+}
+
+.compteur-colonne {
+  text-align: center;
+  font-size: 12px;
+  color: gray;
+}
+
+.ligne {
+  position: relative;
+}
+
+.compteur-ligne {
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 8px;
+  font-size: 12px;
+  color: gray;
+  white-space: nowrap;
+  text-align: center;
+}
+
 .infos-partie {
   display: flex;
   justify-content: center;
