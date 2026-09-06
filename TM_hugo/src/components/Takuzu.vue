@@ -13,7 +13,13 @@ import type { Grille, Ligne } from '../takuzu/types'
 
 const taille = ref(4)
 
-const tailleCase = computed(() => 62 / taille.value)
+const tailleCase = computed(() => {
+  if (window.innerWidth <= 600) {
+    return 75 / taille.value
+  }
+
+  return 62 / taille.value
+})
 const taillechiffre = computed(() => tailleCase.value * 0.4)
 
 const solution = ref<Grille>([])
@@ -594,23 +600,24 @@ const aideActive = ref(false)
   justify-content: center;
   align-items: center;
   gap: 10px;
-  background: linear-gradient(135deg, #eef2f7, #dfe7f1);
-  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #e8eef5, #cbd8e6);
+  font-family: "Trebuchet MS", sans-serif;
 }
 
 .titre {
   margin: 0 0 15px;
   text-align: center;
-  font-size: 2rem;
-  letter-spacing: 4px;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: 5px;
   color: #344054;
 }
 
 .jeu {
-  background: white;
-  padding: 18px 22px;
-  border-radius: 16px;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
 }
 
 .ligne {
@@ -802,7 +809,7 @@ const aideActive = ref(false)
 
 .page.sombre .jeu {
   background: #222;
-  color: white;
+  color: dark;
 }
 
 .page.sombre .grille {
@@ -941,5 +948,59 @@ button:active:not(:disabled) {
 button:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+
+  .page {
+    padding: 10px;
+    box-sizing: border-box;
+  }
+
+  .jeu {
+    width: 95vw;
+    padding: 12px;
+    box-sizing: border-box;
+  }
+
+  .titre {
+    font-size: 28px;
+  }
+
+  .barre-haut {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .infos-partie {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .boutons-jeu {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  button {
+    font-size: 13px;
+    padding: 7px 10px;
+  }
+
+  select {
+    font-size: 13px;
+  }
+
+  .compteur-ligne {
+    font-size: 9px;
+    margin-left: 4px;
+  }
+
+  .compteur-colonne {
+    font-size: 9px;
+  }
+
 }
 </style>
