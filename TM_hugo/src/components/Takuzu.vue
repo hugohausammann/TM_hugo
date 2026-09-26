@@ -552,7 +552,11 @@ const aideActive = ref(false)
       </button>
     </div>
     </div>
+    <div class="auteur-jeu">
+      Auteur du jeu : Hugo Hausammann
+    </div>
   </div>
+  
 </template>
 
 <style scoped>
@@ -570,6 +574,15 @@ const aideActive = ref(false)
 
 .ligne {
   position: relative;
+}
+
+.auteur-jeu {
+  position: fixed;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.45);
 }
 
 .compteur-ligne {
@@ -600,7 +613,27 @@ const aideActive = ref(false)
   justify-content: center;
   align-items: center;
   gap: 10px;
-  background: linear-gradient(135deg, #e8eef5, #cbd8e6);
+
+  background-image:
+    url('/images/violet.png'),
+    url('/images/verte.png'),
+    linear-gradient(135deg, #e8eef5, #cbd8e6);
+
+  background-repeat:
+    no-repeat,
+    no-repeat,
+    no-repeat;
+
+  background-position:
+    left center,
+    right center,
+    center;
+
+  background-size:
+    clamp(1000px, 110vw, 2400px) auto,
+    clamp(1000px, 110vw, 2400px) auto,
+    cover;
+
   font-family: "Trebuchet MS", sans-serif;
 }
 
