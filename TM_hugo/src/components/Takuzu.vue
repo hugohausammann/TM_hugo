@@ -578,7 +578,7 @@ const aideActive = ref(false)
 
 .auteur-jeu {
   position: fixed;
-  bottom: 8px;
+  bottom: 4px;
   left: 50%;
   transform: translateX(-50%);
   font-size: 10px;
@@ -615,23 +615,15 @@ const aideActive = ref(false)
   gap: 10px;
 
   background-image:
-    url('/images/violet.png'),
-    url('/images/verte.png'),
+    url('/images/white.png'),
+    
     linear-gradient(135deg, #e8eef5, #cbd8e6);
 
-  background-repeat:
-    no-repeat,
-    no-repeat,
-    no-repeat;
+  background-repeat: no-repeat;
 
-  background-position:
-    left center,
-    right center,
-    center;
+  background-position: center;
 
   background-size:
-    clamp(1000px, 110vw, 2400px) auto,
-    clamp(1000px, 110vw, 2400px) auto,
     cover;
 
   font-family: "Trebuchet MS", sans-serif;
