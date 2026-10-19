@@ -268,33 +268,37 @@ function arreterChrono() {
 
 const nombreErreurs = ref(0)
 
-const record4 = ref(0)
-const record6 = ref(0)
-const record8 = ref(0)
-const record12 = ref(0)
+const record4 = ref(Number(localStorage.getItem('record4')) || 0)
+const record6 = ref(Number(localStorage.getItem('record6')) || 0)
+const record8 = ref(Number(localStorage.getItem('record8')) || 0)
+const record12 = ref(Number(localStorage.getItem('record12')) || 0)
 
 function enregistrerRecord() {
   if (taille.value === 4) {
     if (record4.value === 0 || secondesEcoulees.value < record4.value) {
       record4.value = secondesEcoulees.value
+      localStorage.setItem('record4', String(record4.value))
     }
   }
 
   if (taille.value === 6) {
     if (record6.value === 0 || secondesEcoulees.value < record6.value) {
       record6.value = secondesEcoulees.value
+      localStorage.setItem('record6', String(record6.value))
     }
   }
 
   if (taille.value === 8) {
     if (record8.value === 0 || secondesEcoulees.value < record8.value) {
       record8.value = secondesEcoulees.value
+      
     }
   }
 
   if (taille.value === 12) {
     if (record12.value === 0 || secondesEcoulees.value < record12.value) {
       record12.value = secondesEcoulees.value
+      localStorage.setItem('record12', String(record12.value))
     }
   }
 }
@@ -615,7 +619,7 @@ const aideActive = ref(false)
   gap: 10px;
 
   background-image:
-    url('/images/white.png'),
+    url('/images/fond.png'),
     
     linear-gradient(135deg, #e8eef5, #cbd8e6);
 
