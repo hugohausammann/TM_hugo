@@ -60,6 +60,8 @@ function changerCellule(indexLigne: number, indexCellule: number) {
   }
 }
 
+
+
 function recommencer() {
   grille.value = grilleInitiale.value.map(ligne => [...ligne])
 
@@ -74,6 +76,19 @@ function recommencer() {
 
   nombreErreurs.value = 0
 }
+// function changerCellule(indexLigne: number, indexCellule: number) {
+//   const ligne = grille.value[indexLigne]
+  
+//  if(!ligne) {
+//     return
+//  }
+
+//   if (ligne[indexCellule] === 0) {
+//     ligne[indexCellule]= 1
+//   } else {
+//     ligne[indexCellule] = 0
+//   }
+// }
 
 function genererGrille() {
   if (jeuTermine.value) {
@@ -108,6 +123,17 @@ function genererGrille() {
 
   nombreErreurs.value = 0
 }
+// type Grille = number[][]
+
+//function creerGrille(): Grille {
+//  const grille: Grille = [
+  
+//  ]
+//  return grille
+//}
+//const grille = ref<Grille>(creerGrille())
+
+
 
 function validerPartie() {
   lignesEnErreur.value = []
@@ -140,6 +166,17 @@ function validerPartie() {
     }
   }
 }
+// function partieGagnee(): boolean {
+//   for (let i = 0; i < 3; i++) {
+//     for (let j = 0; j < 3; j++) {
+//       if (grille.value[i][j] === 1) {
+//         return false
+//       }
+//     }
+//   }
+
+//   return true
+// }
 
 const jeuTermine = ref(false)
 const messageValidation = ref('')
@@ -182,7 +219,7 @@ function chercherColonnesEnErreur() {
   }
 }
 
-const sonClic = new Audio('/sons/touch.mp3')
+const sonClic = new Audio(import.meta.env.BASE_URL + 'sons/touch.mp3')
 
 function jouerSonClic() {
   if (!sonActive.value) {
@@ -193,8 +230,8 @@ function jouerSonClic() {
   sonClic.play()
 }
 
-const sonErreur = new Audio('/sons/erreur.mp3')
-const sonVictoire = new Audio('/sons/victoire.mp3')
+const sonErreur = new Audio(import.meta.env.BASE_URL + 'sons/erreur.mp3')
+const sonVictoire = new Audio(import.meta.env.BASE_URL + 'sons/victoire.mp3')
 
 function jouerSonErreur() {
   if (!sonActive.value) {
@@ -222,7 +259,7 @@ function changerSon() {
 
 const musiqueActive = ref(false)
 
-const musique = new Audio('/sons/musique.mp3')
+const musique = new Audio(import.meta.env.BASE_URL + 'sons/musique.mp3')
 musique.loop = true
 musique.volume = 0.05
 
@@ -562,6 +599,30 @@ const aideActive = ref(false)
   </div>
   
 </template>
+<!-- <div class="page">
+
+  <div>
+    <div
+      v-for="(ligne, indexLigne) in grille"
+      class="ligne"
+    >
+
+      <div
+        v-for="(cellule, indexCellule) in ligne"
+        class="cellule"
+        @click="changerCellule(indexLigne, indexCellule)"
+      >
+        {{ cellule }}
+      </div>
+
+    </div>
+  </div>
+
+  <div v-if="partieGagnee()">
+    VICTOIRE !
+  </div>
+
+</div> -->
 
 <style scoped>
 .compteurs-colonnes {
@@ -652,6 +713,30 @@ const aideActive = ref(false)
 .ligne {
   display: flex;
 }
+/* .page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.ligne {
+  display: flex;
+}
+
+.cellule {
+  width: 100px;
+  height: 100px;
+  border: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 100px;
+  background-color: gray;
+} */
+
 
 .cellule {
   display: flex;
