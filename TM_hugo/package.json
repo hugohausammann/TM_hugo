@@ -20,6 +20,7 @@
     "tailwindcss": "^4.2.1",
     "typescript": "~5.9.3",
     "vite": "^7.2.4",
+    "vite-plugin-pwa": "^2.0.0",
     "vue-tsc": "^3.1.4"
   }
 }

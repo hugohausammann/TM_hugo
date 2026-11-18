@@ -219,7 +219,21 @@ function chercherColonnesEnErreur() {
   }
 }
 
-const sonClic = new Audio(import.meta.env.BASE_URL + 'sons/touch.mp3')
+// Charge un son en entier dès le début (avec fetch).
+// Comme ça, il marche aussi hors ligne : le service worker le donne depuis le cache.
+function creerSon(nomFichier: string) {
+  const son = new Audio()
+
+  fetch(import.meta.env.BASE_URL + 'sons/' + nomFichier)
+    .then(reponse => reponse.blob())
+    .then(fichier => {
+      son.src = URL.createObjectURL(fichier)
+    })
+
+  return son
+}
+
+const sonClic = creerSon('touch.mp3')
 
 function jouerSonClic() {
   if (!sonActive.value) {
@@ -230,8 +244,8 @@ function jouerSonClic() {
   sonClic.play()
 }
 
-const sonErreur = new Audio(import.meta.env.BASE_URL + 'sons/erreur.mp3')
-const sonVictoire = new Audio(import.meta.env.BASE_URL + 'sons/victoire.mp3')
+const sonErreur = creerSon('erreur.mp3')
+const sonVictoire = creerSon('victoire.mp3')
 
 function jouerSonErreur() {
   if (!sonActive.value) {
@@ -259,7 +273,7 @@ function changerSon() {
 
 const musiqueActive = ref(false)
 
-const musique = new Audio(import.meta.env.BASE_URL + 'sons/musique.mp3')
+const musique = creerSon('musique.mp3')
 musique.loop = true
 musique.volume = 0.05
 
